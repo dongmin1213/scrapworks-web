@@ -82,6 +82,8 @@ export class YardLine {
   conveyorT = 0;
   pendingPickup: string | null = null;
   pendingPickupCash = 0;
+  /** 수령 대기 발견물이 나온 등급 — **금액을 다시 계산하기 위해** 저장한다. */
+  pendingPickupGrade = 0;
 
   private settleT = 0;
 
@@ -354,6 +356,7 @@ export class YardLine {
 
     if (it.pendingFind) {
       this.pendingPickup = it.pendingFind;
+      this.pendingPickupGrade = it.grade;
       // **회수액 기준**이다 — 매입가에 연동하면 등급 곡선을 타고 보상이 폭발한다(원본 시뮬 실측)
       this.pendingPickupCash =
         this.balance.yieldTotal(it.grade) * (this.balance.findItemOf(it.pendingFind)?.cashMult ?? 1);
@@ -383,6 +386,7 @@ export class YardLine {
     this.workshop.addCodex(this.pendingPickup);
     this.pendingPickup = null;
     this.pendingPickupCash = 0;
+    this.pendingPickupGrade = 0;
     return true;
   }
 
@@ -419,6 +423,7 @@ export class YardLine {
       settleT: this.settleT,
       pendingPickup: this.pendingPickup,
       pendingPickupCash: this.pendingPickupCash,
+      pendingPickupGrade: this.pendingPickupGrade,
     };
   }
 
@@ -442,14 +447,18 @@ export class YardLine {
       offerGrades.length === this.offers.length &&
       this.offers.every((row) => offerGrades.filter((g) => g === row.grade).length === 1);
 
-    if (offersComplete) {
+    // **전부 적용하거나 전부 두거나** — 한 칸만 손상돼도 나머지를 덮으면,
+    // 그 한 칸은 생성자가 굴린 임시 값이고 나머지는 저장값인데 난수는 저장 시점으로
+    // 되감긴다. 재고와 수열의 시점이 어긋난 채로 계속 돈다 (적대적 리뷰 R7-19).
+    const restorable =
+      offersComplete &&
+      (s.offers as BuyOffer[]).every(
+        (o) => typeof o.conditionId === "string" && this.hasCondition(o.conditionId),
+      );
+
+    if (restorable) {
       for (const o of s.offers as BuyOffer[]) {
-        const row = this.offers.find((x) => x.grade === o.grade)!;
-        if (typeof o.conditionId === "string" && this.hasCondition(o.conditionId)) {
-          row.conditionId = o.conditionId;
-        } else {
-          intact = false;
-        }
+        this.offers.find((x) => x.grade === o.grade)!.conditionId = o.conditionId;
       }
     } else {
       intact = false;
@@ -475,11 +484,27 @@ export class YardLine {
     this.mode = s.mode === "strip" ? "strip" : "smash";
     this.conveyorT = clamp01(num(s.conveyorT, 0));
     this.settleT = Math.max(0, num(s.settleT, 0));
+    // 수령 대기 발견물 — **금액은 저장값을 믿지 않고 다시 계산한다.**
+    // 전에는 "유한한 0 이상"이기만 하면 그대로 지급했다. 유효한 발견물 id와 1e300을
+    // 넣으면 그대로 들어온다 (적대적 리뷰 R7-17). 금액은 등급과 cashMult가 정하는 값이므로
+    // **어느 등급에서 나왔는지**를 함께 저장하고 그걸로 다시 만든다.
     this.pendingPickup =
       typeof s.pendingPickup === "string" && this.balance.findItemOf(s.pendingPickup)
         ? s.pendingPickup
         : null;
-    this.pendingPickupCash = this.pendingPickup ? Math.max(0, num(s.pendingPickupCash, 0)) : 0;
+
+    if (this.pendingPickup) {
+      const grade = Math.min(
+        this.balance.machine.gradeCap,
+        Math.max(1, Math.floor(num(s.pendingPickupGrade, 1))),
+      );
+      this.pendingPickupGrade = grade;
+      this.pendingPickupCash =
+        this.balance.yieldTotal(grade) * (this.balance.findItemOf(this.pendingPickup)?.cashMult ?? 1);
+    } else {
+      this.pendingPickupGrade = 0;
+      this.pendingPickupCash = 0;
+    }
 
     return intact;
   }
@@ -504,15 +529,19 @@ export class YardLine {
     const maxHp = this.balance.durability(grade) * cond.durMult;
     if (!(maxHp > 0)) return null;
 
-    // 체력은 0..maxHp, 누적 데미지는 부수기 몫이 전체를 넘을 수 없다 — 넘으면 stripFrac이 음수가 되고
-    // 정산 배수가 뒤집힌다. 조작된 세이브로 자원을 뽑는 경로를 여기서 막는다.
-    const totalDmg = Math.max(0, Math.min(maxHp, num(r.totalDmg, 0)));
+    // **보존식이 규칙이다: `hp + totalDmg == maxHp`.**
+    // 둘을 따로 clamp하면 `hp:0, totalDmg:0`이 통과하고, 그 물건은 **아무 처리 없이**
+    // 다음 틱에 정산된다 — 매입가만 내고 전액을 회수하는 무한 루프가 된다
+    // (적대적 리뷰 R7-16). hp를 신뢰하고 totalDmg는 **계산한다.**
+    const hp = Math.max(0, Math.min(maxHp, num(r.hp, maxHp)));
+    const totalDmg = maxHp - hp;
     return {
       grade,
       conditionId: r.conditionId,
       revealed: r.revealed === true,
       maxHp,
-      hp: Math.max(0, Math.min(maxHp, num(r.hp, maxHp))),
+      hp,
+      // 부수기 몫이 전체를 넘을 수 없다 — 넘으면 stripFrac이 음수가 되고 정산 배수가 뒤집힌다
       smashDmg: Math.max(0, Math.min(totalDmg, num(r.smashDmg, 0))),
       totalDmg,
       // dropAcc는 항상 1 미만이다(1이 되면 그 자리에서 드랍으로 소비된다)
@@ -535,6 +564,8 @@ export interface YardState {
   settleT: number;
   pendingPickup: string | null;
   pendingPickupCash: number;
+  /** 발견물이 나온 등급 — 복원 시 금액을 다시 계산하는 근거 */
+  pendingPickupGrade: number;
 }
 
 function num(v: unknown, fallback: number): number {

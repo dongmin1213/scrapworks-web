@@ -121,14 +121,24 @@ export class DotNetRandom {
     if (typeof v !== "object" || v === null) return false;
     const s = v as Partial<RngState>;
     const inCursorRange = (n: unknown) => Number.isInteger(n) && (n as number) >= 0 && (n as number) < 56;
-    return (
-      Array.isArray(s.s) &&
-      s.s.length === 56 &&
+    if (
+      !Array.isArray(s.s) ||
+      s.s.length !== 56 ||
       // 시드 배열의 값은 감산식 생성기의 상태라 0..MBIG 범위다
-      s.s.every((n) => Number.isInteger(n) && n >= 0 && n <= MBIG) &&
-      inCursorRange(s.i) &&
-      inCursorRange(s.p)
-    );
+      !s.s.every((n) => Number.isInteger(n) && n >= 0 && n <= MBIG) ||
+      !inCursorRange(s.i) ||
+      !inCursorRange(s.p)
+    ) {
+      return false;
+    }
+
+    // **두 커서의 간격은 불변이다.** 초기 (0, 21)에서 시작해 둘이 함께 전진하므로
+    // modulo 55로 간격 21이 유지된다. 범위만 보면 `i === p`도 통과하는데, 그러면
+    // 다음 표본부터 **같은 원소를 자기 자신에서 빼서 0만 나오는 퇴화 수열**이 된다
+    // (적대적 리뷰 R7-18).
+    // 초기 (0, 21)도 이 식을 만족한다 — 특수 케이스가 필요 없다
+    const gap = (((s.p as number) - (s.i as number)) % 55 + 55) % 55;
+    return gap === 21;
   }
 }
 

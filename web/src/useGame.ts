@@ -190,6 +190,8 @@ export function useGame() {
 
   const revRef = useRef(boot.current.rev);
   const [hasLease, setHasLease] = useState(true);
+  /** 한 번 잃으면 다시 true가 되지 않는다 — 새로고침만이 되돌린다 */
+  const lostLease = useRef(false);
   /**
    * 이 탭의 신원 — **부팅이 만든다.** 훅에서 따로 만들면 부팅이 쓴 저장에는 다른 값이
    * 들어가고, 그러면 **자기가 쓴 저장을 남의 것으로 오인해 저장이 통째로 막힌다**
@@ -320,19 +322,29 @@ export function useGame() {
 
     // 다른 탭이 소유권을 가져가면 storage 이벤트가 온다 (같은 탭에서는 발생하지 않는다)
     const onStorage = (e: StorageEvent) => {
-      if (e.key === LEASE_KEY && e.newValue && e.newValue !== leaseId) setHasLease(false);
+      if (e.key === LEASE_KEY && e.newValue && e.newValue !== leaseId) {
+        lostLease.current = true;
+        setHasLease(false);
+      }
       // 다른 탭이 **저장**하면 그 순간 우리 상태가 낡는다 — 리스와 별개로 확인한다
-      if (e.key === SAVE_KEY && stale()) setHasLease(false);
+      if (e.key === SAVE_KEY && stale()) {
+        lostLease.current = true;
+        setHasLease(false);
+      }
     };
 
-    // 돌아왔을 때 되찾는 것은 **우리가 여전히 최신일 때만**이다
+    // **한 번 잃으면 새로고침 전까지 되찾지 않는다** — 단방향 래치다.
+    //
+    // 전에는 "저장이 더 새롭지만 않으면" 되찾았는데, 다른 탭이 소유권만 주장하고
+    // 아직 저장하지 않았으면 리비전이 같아 **오래된 탭이 즉시 되찾았다**
+    // (적대적 리뷰 R7-10). 주석은 래치라고 적어 두고 코드는 아니었다.
     const onFocus = () => {
-      if (stale()) {
+      if (lostLease.current || stale()) {
+        lostLease.current = true;
         setHasLease(false);
         return;
       }
       claim();
-      setHasLease(true);
     };
 
     window.addEventListener("storage", onStorage);
@@ -354,42 +366,54 @@ export function useGame() {
    * `navigator.locks`가 읽기-검사-쓰기를 한 덩어리로 만든다. 락이 없는 브라우저에서는
    * 그냥 실행한다 — 그 경우 경합 창이 남지만, 저장을 아예 못 하는 것보다는 낫다.
    */
+  const writeSave = useCallback((): void => {
+    try {
+      const existing = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
+      const mine = { rev: revRef.current, owner: leaseId };
+      // 판정은 엔진의 순수 함수가 한다 — 브라우저 없이 테스트할 수 있어야 한다
+      if (shouldYieldSave(existing as SaveOwnership | null, mine)) {
+        setHasLease(false);
+        return;
+      }
+      const nextRev = nextRevision(existing as SaveOwnership | null, mine);
+      const file: SaveFile = {
+        version: SAVE_VERSION,
+        d: workshop.d,
+        line: line.saveState(),
+        rng: boot.current!.rng.saveState(),
+        savedAtMs: Date.now(),
+        rev: nextRev,
+        owner: leaseId,
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(file));
+      revRef.current = nextRev;
+      for (const k of LEGACY_KEYS) localStorage.removeItem(k);
+    } catch {
+      // 저장 실패(프라이빗 모드·용량 초과)는 게임을 막지 않는다
+    }
+  }, [workshop, line, leaseId]);
+
   const save = useCallback(() => {
     if (!hasLease) return; // 소유권 없는 탭은 쓰지 않는다
-
-    const write = () => {
-      try {
-        const existing = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
-        const mine = { rev: revRef.current, owner: leaseId };
-        // 판정은 엔진의 순수 함수가 한다 — 브라우저 없이 테스트할 수 있어야 한다
-        if (shouldYieldSave(existing as SaveOwnership | null, mine)) {
-          setHasLease(false);
-          return;
-        }
-        const nextRev = nextRevision(existing as SaveOwnership | null, mine);
-        const file: SaveFile = {
-          version: SAVE_VERSION,
-          d: workshop.d,
-          line: line.saveState(),
-          rng: boot.current!.rng.saveState(),
-          savedAtMs: Date.now(),
-          rev: nextRev,
-          owner: leaseId,
-        };
-        localStorage.setItem(SAVE_KEY, JSON.stringify(file));
-        revRef.current = nextRev;
-        for (const k of LEGACY_KEYS) localStorage.removeItem(k);
-      } catch {
-        // 저장 실패(프라이빗 모드·용량 초과)는 게임을 막지 않는다
-      }
-    };
-
     if (typeof navigator !== "undefined" && navigator.locks) {
-      void navigator.locks.request(SAVE_LOCK, write);
+      void navigator.locks.request(SAVE_LOCK, writeSave);
     } else {
-      write();
+      writeSave();
     }
-  }, [hasLease, workshop, line, leaseId]);
+  }, [hasLease, writeSave]);
+
+  /**
+   * 종료 직전 저장 — **락을 기다리지 않는다.**
+   *
+   * `navigator.locks.request`는 비동기다. 다른 문서가 락을 잡고 있으면 콜백이 큐에서
+   * 기다리는 동안 탭이 닫히고 **마지막 진행이 사라진다** (적대적 리뷰 R7-15).
+   * `pagehide`에는 기다릴 시간이 없으므로 동기로 쓴다 — 경합 창이 열리지만,
+   * 확실히 잃는 것보다 드물게 겹치는 편이 낫다. 겹침은 리비전·owner가 잡는다.
+   */
+  const saveNow = useCallback(() => {
+    if (!hasLease) return;
+    writeSave();
+  }, [hasLease, writeSave]);
 
   // 저장 함수가 준비되면 엔진 콜백에 꽂는다 — 자동 완료도 즉시 저장된다
   useEffect(() => {
@@ -440,14 +464,14 @@ export function useGame() {
 
   // 탭을 떠날 때도 한 번 — 주기 저장만으로는 마지막 몇 초를 잃는다
   useEffect(() => {
-    const onHide = () => save();
+    const onHide = () => saveNow();
     window.addEventListener("pagehide", onHide);
     document.addEventListener("visibilitychange", onHide);
     return () => {
       window.removeEventListener("pagehide", onHide);
       document.removeEventListener("visibilitychange", onHide);
     };
-  }, [save]);
+  }, [saveNow]);
 
   // ── 조작 ──
 

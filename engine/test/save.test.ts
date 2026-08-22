@@ -270,3 +270,72 @@ describe("저장 소유권 — 누가 더 새것인가", () => {
     expect(nextRevision(null, { rev: 5 })).toBe(5);
   });
 });
+
+/**
+ * 세이브 불변식 — **규칙이 만들 수 없는 상태는 규칙으로 되돌린다.**
+ *
+ * 타입·범위 검사만으로는 부족했다. `hp:0, totalDmg:0`은 두 값 모두 정상 범위지만
+ * "아무 처리도 안 했는데 체력이 0"이라는 불가능한 상태이고, 다음 틱에 그대로 정산된다 —
+ * 매입가만 내고 전액을 회수하는 무한 루프다 (적대적 리뷰 R7-16·17·18·19).
+ */
+describe("세이브 불변식", () => {
+  it("hp + totalDmg는 항상 maxHp다 — 처리 없이 정산되지 않는다", () => {
+    const { w, line } = fresh();
+    line.restoreState({
+      offers: line.offers,
+      // 조작: 체력만 0으로 (처리는 안 했다고 주장)
+      queue: [{ grade: 1, conditionId: "cond-normal", maxHp: 90, hp: 0, totalDmg: 0, findRolled: true }],
+      conveyorT: 1,
+    });
+
+    const it0 = line.queue[0];
+    expect(it0.hp + it0.totalDmg).toBeCloseTo(it0.maxHp, 9);
+    // hp=0이면 totalDmg=maxHp — 즉 "다 처리했다"로 복원된다. 정산이 한 번은 일어나지만
+    // 그건 실제로 다 부순 물건과 같은 상태이므로 반복 착취가 되지 않는다.
+    expect(it0.totalDmg).toBeCloseTo(it0.maxHp, 9);
+    expect(w.scrap).toBe(0); // 복원 자체는 자원을 만들지 않는다
+  });
+
+  it("발견 보상액은 저장값이 아니라 등급에서 다시 계산한다", () => {
+    const { balance, line } = freshWithBalance();
+    const findId = balance.find.items[0].id;
+    line.restoreState({
+      offers: line.offers,
+      queue: [],
+      conveyorT: 0,
+      pendingPickup: findId,
+      pendingPickupCash: 1e300, // 조작
+      pendingPickupGrade: 1,
+    });
+
+    const expected = balance.yieldTotal(1) * (balance.findItemOf(findId)?.cashMult ?? 1);
+    expect(line.pendingPickupCash).toBeCloseTo(expected, 6);
+    expect(line.pendingPickupCash).toBeLessThan(1e6);
+  });
+
+  it("매대는 한 칸만 손상돼도 전부 새로 굴린다 — 부분 적용이 시점을 어긋나게 한다", () => {
+    const { line } = fresh();
+    const saved = line.saveState();
+    const broken = {
+      ...saved,
+      offers: saved.offers.map((o, i) => (i === 3 ? { ...o, conditionId: "cond-없음" } : o)),
+    };
+
+    const before = line.offers.map((o) => o.conditionId);
+    expect(line.restoreState(broken)).toBe(false);
+    // 부분 적용이 아니라 **손대지 않는다** — 생성자가 굴린 값 그대로다
+    expect(line.offers.map((o) => o.conditionId)).toEqual(before);
+  });
+
+  it("난수 커서의 간격 21은 불변이다 — i===p면 0만 나오는 퇴화 수열이 된다", () => {
+    const valid = new DotNetRandom(1).saveState();
+    expect(DotNetRandom.isValidState({ ...valid, i: 1, p: 1 })).toBe(false);
+    expect(DotNetRandom.isValidState({ ...valid, i: 5, p: 10 })).toBe(false);
+    // 실제 생성기가 만든 상태는 여러 번 뽑아도 항상 통과해야 한다
+    const rng = new DotNetRandom(4242);
+    for (let i = 0; i < 200; i++) {
+      rng.nextDouble();
+      expect(DotNetRandom.isValidState(rng.saveState()), `${i}번째 표본 뒤 상태가 거부됐다`).toBe(true);
+    }
+  });
+});
