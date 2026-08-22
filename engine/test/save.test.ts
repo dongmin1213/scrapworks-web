@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import balanceJson from "../content/balance.json";
 import { Balance, type BalanceData } from "../src/balance";
 import { DotNetRandom } from "../src/rng";
+import { nextRevision, shouldYieldSave } from "../src/saveLease";
 import { newGame, sanitizeSave, Workshop } from "../src/workshop";
 import { YardLine } from "../src/yardLine";
 
@@ -225,5 +226,47 @@ describe("세이브 일관성 — 규칙상 불가능한 상태는 받지 않는
     expect(DotNetRandom.isValidState({ ...valid, p: -20 })).toBe(false);
     expect(DotNetRandom.isValidState({ ...valid, s: valid.s.map(() => 2 ** 40) })).toBe(false);
     expect(DotNetRandom.isValidState(valid)).toBe(true);
+  });
+});
+
+/**
+ * 저장 소유권 — **자기가 쓴 저장을 남의 것으로 오인하면 저장이 통째로 막힌다.**
+ *
+ * 실제로 그렇게 만들었다: 부팅이 쓴 저장에 훅과 다른 신원이 들어가, 첫 저장부터
+ * 충돌로 판정돼 이후 아무것도 기록되지 않았다. 화면은 멀쩡히 돌았고 새로고침해야
+ * 알 수 있었다 — 가장 나쁜 종류의 침묵이다 (적대적 리뷰 R6 수정 중 자초).
+ */
+describe("저장 소유권 — 누가 더 새것인가", () => {
+  const me = { rev: 5, owner: "tab-A" };
+
+  it("저장이 없으면 그냥 쓴다", () => {
+    expect(shouldYieldSave(null, me)).toBe(false);
+  });
+
+  it("저장이 내 것보다 앞서면 양보한다 — 내가 낡았다", () => {
+    expect(shouldYieldSave({ rev: 6, owner: "tab-B" }, me)).toBe(true);
+  });
+
+  it("저장이 내 것보다 뒤면 쓴다", () => {
+    expect(shouldYieldSave({ rev: 4, owner: "tab-B" }, me)).toBe(false);
+  });
+
+  it("**동률이면 남이 쓴 것은 충돌이다** — 같은 리비전을 둘이 쓰면 하나가 사라진다", () => {
+    expect(shouldYieldSave({ rev: 5, owner: "tab-B" }, me)).toBe(true);
+  });
+
+  it("동률이어도 **내가 쓴 것이면 계속 쓴다** — 이게 막히면 저장이 죽는다", () => {
+    expect(shouldYieldSave({ rev: 5, owner: "tab-A" }, me)).toBe(false);
+  });
+
+  it("owner가 없는 옛 저장은 충돌이 아니다 — 아니면 업그레이드하는 모든 탭이 읽기전용이 된다", () => {
+    expect(shouldYieldSave({ rev: 5 }, me)).toBe(false);
+    expect(shouldYieldSave({ rev: 99 }, me)).toBe(true); // 다만 더 새것이면 여전히 양보한다
+  });
+
+  it("다음 리비전은 저장된 것보다 반드시 크다", () => {
+    expect(nextRevision({ rev: 9 }, { rev: 5 })).toBe(10);
+    expect(nextRevision({ rev: 2 }, { rev: 5 })).toBe(5);
+    expect(nextRevision(null, { rev: 5 })).toBe(5);
   });
 });

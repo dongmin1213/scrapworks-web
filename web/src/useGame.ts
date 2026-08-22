@@ -3,6 +3,8 @@ import {
   DotNetRandom,
   Session,
   Workshop,
+  nextRevision,
+  shouldYieldSave,
   YardLine,
   newGame,
   sanitizeSave,
@@ -13,11 +15,12 @@ import {
   type RngState,
   type SpecialCost,
   type SaveData,
+  type SaveOwnership,
   type YardState,
 } from "@scrapworks/engine";
 import balanceJson from "@scrapworks/engine/content/balance.json";
 import { t } from "./strings";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * 게임 루프 — 엔진을 굴리고 화면이 읽을 스냅샷을 만든다.
@@ -178,6 +181,8 @@ export function useGame() {
     rev: number;
     /** 물건 완료 시 저장을 부르는 자리 — 훅이 준비되면 꽂는다 */
     savePort: { current: (() => void) | null };
+    /** 이 탭의 신원 — 부팅과 훅이 **같은 값**을 써야 한다 */
+    leaseId: string;
   }>();
 
   if (!boot.current) boot.current = bootstrap();
@@ -185,7 +190,12 @@ export function useGame() {
 
   const revRef = useRef(boot.current.rev);
   const [hasLease, setHasLease] = useState(true);
-  const leaseId = useMemo(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`, []);
+  /**
+   * 이 탭의 신원 — **부팅이 만든다.** 훅에서 따로 만들면 부팅이 쓴 저장에는 다른 값이
+   * 들어가고, 그러면 **자기가 쓴 저장을 남의 것으로 오인해 저장이 통째로 막힌다**
+   * (실제로 그렇게 만들었다 — 화면은 돌고 새로고침해야 알 수 있었다).
+   */
+  const leaseId = boot.current.leaseId;
 
   /**
    * 공방 이전(환생) — **되돌릴 수 없으므로 두 번 눌러야 한다.**
@@ -350,17 +360,13 @@ export function useGame() {
     const write = () => {
       try {
         const existing = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
-        // **동률도 충돌이다.** 같은 리비전을 두 탭이 쓰면 하나가 조용히 사라진다.
-        // 우리 것이 확실히 더 새로울 때만(= 우리가 그 저장의 주인일 때만) 쓴다.
-        if (
-          typeof existing?.rev === "number" &&
-          existing.rev >= revRef.current &&
-          existing.owner !== leaseId
-        ) {
+        const mine = { rev: revRef.current, owner: leaseId };
+        // 판정은 엔진의 순수 함수가 한다 — 브라우저 없이 테스트할 수 있어야 한다
+        if (shouldYieldSave(existing as SaveOwnership | null, mine)) {
           setHasLease(false);
           return;
         }
-        const nextRev = Math.max(revRef.current, (existing?.rev ?? 0) + 1);
+        const nextRev = nextRevision(existing as SaveOwnership | null, mine);
         const file: SaveFile = {
           version: SAVE_VERSION,
           d: workshop.d,
@@ -551,6 +557,8 @@ export function useGame() {
  */
 function bootstrap() {
   const balance = new Balance(balanceJson as unknown as BalanceData);
+  // 이 탭의 신원 — 부팅이 쓰는 저장에도 이 값이 들어가야 한다
+  const leaseId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const file = loadSaveFile();
 
   const { d, intact } = file?.d ? sanitizeSave(balance, file.d) : { d: newGame(balance), intact: true };
@@ -617,7 +625,7 @@ function bootstrap() {
         rng: rng.saveState(),
         savedAtMs: now,
         rev,
-        owner: file?.owner,
+        owner: leaseId,
       };
       localStorage.setItem(SAVE_KEY, JSON.stringify(file2));
     } catch {
@@ -625,5 +633,5 @@ function bootstrap() {
     }
   }
 
-  return { balance, workshop, line, session, rng, recovered, nightCash, rev, savePort };
+  return { balance, workshop, line, session, rng, recovered, nightCash, rev, savePort, leaseId };
 }

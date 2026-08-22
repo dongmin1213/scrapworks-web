@@ -24,6 +24,8 @@ export type {
 export { DotNetRandom } from "./rng";
 export type { Rng, RngState } from "./rng";
 export { Session } from "./session";
+export { shouldYieldSave, nextRevision } from "./saveLease";
+export type { SaveOwnership } from "./saveLease";
 export { Workshop, newGame, sanitizeSave, SAVE_VERSION } from "./workshop";
 export type { SaveData } from "./workshop";
 export { YardLine } from "./yardLine";
