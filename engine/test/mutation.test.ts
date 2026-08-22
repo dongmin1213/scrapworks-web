@@ -39,7 +39,7 @@ function runScenario(mutate: Mutation = {}): Outcome {
   const finds: string[] = [];
   const line = new YardLine(balance, w, rng, { onFind: (id) => finds.push(id) });
 
-  const step = mutate.doubleDt ? scenario.dt : Math.fround(scenario.dt);
+  const step = Math.fround(scenario.dt);
   const steps = Math.round(scenario.seconds / Math.fround(scenario.dt));
   const togglePeriod = Math.round(scenario.toggleEverySec / Math.fround(scenario.dt));
 
@@ -56,7 +56,14 @@ function runScenario(mutate: Mutation = {}): Outcome {
     if (mutate.extraRngPerStep) rng.nextDouble(); // 난수 한 번 더 소비
 
     if (togglePeriod > 0 && i > 0 && i % togglePeriod === 0) line.toggleMode();
-    line.tick(step);
+    if (mutate.splitTick) {
+      // 같은 시간을 두 번에 나눠 진행한다 — "고정 스텝으로 쪼개면 더 정확하다"는 흔한 오해.
+      // 발견 판정(누적 데미지 50%)이 걸리는 프레임이 달라지고 난수 소비가 어긋난다.
+      line.tick(step / 2);
+      line.tick(step / 2);
+    } else {
+      line.tick(step);
+    }
     if (line.pendingPickup && !mutate.skipClaim) line.claimFind();
   }
 
@@ -78,8 +85,8 @@ interface Mutation {
   rollOnEveryPress?: boolean;
   /** 스텝마다 난수를 한 번 더 쓴다 (호출 순서 어긋남) */
   extraRngPerStep?: boolean;
-  /** dt를 float32로 내리지 않는다 (정밀도 어긋남) */
-  doubleDt?: boolean;
+  /** 같은 dt를 절반씩 두 번 나눠 진행한다 (스텝 분할) */
+  splitTick?: boolean;
   /** 보조 작업대 노드를 빼먹는다 (처리량 경로 미이식) */
   dropHelperNode?: boolean;
   /** 발견물을 수령하지 않는다 (도감·현금 경로 누락) */
@@ -132,9 +139,9 @@ describe("뮤테이션 — 망가뜨리면 골든이 반드시 실패한다", ()
       why: "수식이 전부 맞아도 호출 횟수가 다르면 같은 시드에서 다른 세션이 된다",
     },
     {
-      name: "dt를 float32로 내리지 않는다",
-      mutate: { doubleDt: true },
-      why: "원작은 float으로 시간을 다룬다 — 정밀도가 다르면 컨베이어 도착 프레임이 어긋난다",
+      name: "같은 dt를 절반씩 두 번 나눠 진행한다",
+      mutate: { splitTick: true },
+      why: "발견 판정이 걸리는 프레임이 달라져 난수 소비가 어긋난다 — 총 시간이 같아도 결과는 다르다",
     },
     {
       name: "보조 작업대 노드를 빼먹는다",

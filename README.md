@@ -25,8 +25,11 @@
 - **문자열**: 원본 `Loc.cs`에서 **기계로 추출**한다 (132개, ko/en)
 - **난수**: .NET `System.Random`을 재현한다 (`engine/src/rng.ts`) —
   같은 시드에서 같은 수열이 나와야 대조가 성립한다
-- **골든**: `golden/csharp/DumpFixtures.csx`가 **원본 수식 + 실제 .NET Random**으로
-  픽스처를 만들고, TS가 그것과 대조한다 (**101건**)
+- **골든**: `golden/harness`가 원본 레포의 `Balance.cs`·`YardLine.cs`·`Workshop.cs`를
+  **링크로 컴파일해 그대로 실행**하고, TS가 그 결과와 대조한다 (**234건**).
+  수식을 옮겨 적지 않는다 — 옮겨 적으면 같은 실수가 양쪽에 들어가 전부 통과한다.
+  `pnpm golden:verify`가 픽스처 최신성을 검사하고, `engine/test/mutation.test.ts`가
+  **골든이 정말 결함을 잡는지**를 검사한다.
 
 ```bash
 pnpm golden   # 원본에서 픽스처 재생성 (dotnet-script 필요)

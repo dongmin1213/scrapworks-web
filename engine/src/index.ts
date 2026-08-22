@@ -12,6 +12,7 @@ export type {
   SkillCfg,
   ShopCfg,
   ToolCfg,
+  SpecialCost,
   StartCfg,
   ConditionDef,
   FindItem,
@@ -22,6 +23,7 @@ export type {
 } from "./balance";
 export { DotNetRandom } from "./rng";
 export type { Rng, RngState } from "./rng";
+export { Session } from "./session";
 export { Workshop, newGame, sanitizeSave, SAVE_VERSION } from "./workshop";
 export type { SaveData } from "./workshop";
 export { YardLine } from "./yardLine";

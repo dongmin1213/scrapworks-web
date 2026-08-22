@@ -3,13 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "test": "pnpm golden:verify && vitest run",
     "golden": "SCRAP_BALANCE_PATH=${SCRAP_BALANCE_PATH:-../scrapworks/unity/Assets/Resources/balance.json} dotnet run --project golden/harness -c Release -- golden/fixtures/core.json",
     "build": "pnpm -C web build",
-    "bundle": "scripts/make-bundle.sh",
-    "typecheck": "tsc --noEmit"
+    "bundle": "pnpm golden:verify && scripts/make-bundle.sh",
+    "typecheck": "tsc --noEmit",
+    "golden:verify": "scripts/golden-verify.sh"
   },
   "devDependencies": {
+    "@types/node": "^26.2.0",
     "typescript": "^5.6.3",
     "vitest": "^2.1.9"
   }

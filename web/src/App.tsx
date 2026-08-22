@@ -2,22 +2,35 @@ import { useState } from "react";
 import { Stage } from "./Stage";
 import styles from "./App.module.css";
 import { NumFmt } from "./numFmt";
+import { ShopPanel } from "./ShopPanel";
+import { SkillsPanel } from "./SkillsPanel";
 import { t } from "./strings";
 import { useGame } from "./useGame";
 
 /**
  * 스크랩웍스 웹판.
  *
- * 원본(Unity 모바일 세로)의 **규칙은 엔진이 1:1로 갖고 있고**(골든 81건이 대조한다),
+ * 원본(Unity 모바일 세로)의 **규칙은 엔진이 1:1로 갖고 있고**(골든 234건이 대조한다),
  * 이 파일은 그 상태를 보여주고 입력을 전달하는 일만 한다.
  *
  * 화면 구성은 원본의 세로 흐름을 따른다:
  *   상단 자원 → 작업대(현재 물건·진행) → 축 전환 → 대기열 → 매입
  * 위에서 아래로 "돈이 물건이 되고 물건이 다시 돈이 되는" 순환이 한 화면에 보여야 한다.
  */
+/**
+ * 탭 — 원작의 하단 4탭(작업장·매입·스킬·상점) 그대로.
+ *
+ * 처음엔 작업장과 매대만 한 화면에 붙여 놨다. 그러면 **엔진에 이식한 절반이
+ * 손에 닿지 않는다** — 노드로만 열리는 보조 작업대·대기열 확장·자동매입,
+ * 공구 강화, 작업자, 환생이 전부 화면 없이 코드로만 존재했다(적대적 리뷰 R5).
+ * 규칙을 옮겼으면 그 규칙에 닿는 길도 있어야 한다.
+ */
+type Tab = "yard" | "skills" | "shop";
+
 export function App() {
-  const { state, buy, setMode, claimFind } = useGame();
+  const { state, buy, setMode, claimFind, buyNode, buyTool, buyOp, equipOp, rebirth } = useGame();
   const [dismissedNight, setDismissedNight] = useState(false);
+  const [tab, setTab] = useState<Tab>("yard");
   const current = state.queue[0];
 
   return (
@@ -57,6 +70,8 @@ export function App() {
           </div>
         </header>
 
+        {tab === "yard" && (
+        <>
         {/* ── 작업대 ── */}
         <section className={styles.bench} aria-label="작업대">
           {current ? (
@@ -169,6 +184,59 @@ export function App() {
             <span className={styles.findCash}>+{NumFmt.f(state.pendingPickupCash)}</span>
           </button>
         )}
+        </>
+        )}
+
+        {tab === "skills" && (
+          <SkillsPanel scrap={state.scrap} rows={state.nodes} onBuy={buyNode} />
+        )}
+
+        {tab === "shop" && (
+          <ShopPanel
+            parts={state.parts}
+            copper={state.copper}
+            boards={state.boards}
+            cores={state.cores}
+            tools={state.tools}
+            ops={state.ops}
+            nextOpCost={state.nextOpCost}
+            canBuyOp={state.canBuyOp}
+            rebirth={state.rebirth}
+            onBuyTool={buyTool}
+            onBuyOp={buyOp}
+            onEquip={equipOp}
+            onRebirth={rebirth}
+          />
+        )}
+
+        {/* ── 탭 바 — 원작은 하단 고정이다. 엄지가 닿는 곳에 둔다. ── */}
+        <nav className={styles.tabs} aria-label="화면 전환">
+          {(
+            [
+              ["yard", t("tab.yard")],
+              ["skills", t("tab.skills")],
+              ["shop", t("tab.shop")],
+            ] as [Tab, string][]
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={styles.tab}
+              data-active={tab === id || undefined}
+              aria-current={tab === id ? "page" : undefined}
+              onClick={() => setTab(id)}
+            >
+              {label}
+              {/* 살 수 있는 것이 생기면 점으로 알린다 — 탭을 하나씩 눌러 보게 만들지 않는다 */}
+              {id === "skills" && state.nodes.some((n) => n.affordable) && (
+                <span className={styles.tabDot} aria-label="구매 가능" />
+              )}
+              {id === "shop" && (state.tools.some((x) => x.affordable) || state.canBuyOp) && (
+                <span className={styles.tabDot} aria-label="구매 가능" />
+              )}
+            </button>
+          ))}
+        </nav>
       </div>
     </Stage>
   );

@@ -92,10 +92,22 @@ export class DotNetRandom {
 
   static restore(state: RngState): DotNetRandom {
     const r = new DotNetRandom(0);
-    r.seedArray.set(state.s);
-    r.inext = state.i;
-    r.inextp = state.p;
+    r.loadState(state);
     return r;
+  }
+
+  /**
+   * **이 인스턴스에** 상태를 밀어 넣는다 (새 객체를 만들지 않는다).
+   *
+   * 왜 필요한가: 세이브를 불러올 때 `YardLine` 생성자가 매대 6칸을 굴린다. 그 뒤에
+   * 저장된 매대로 덮어써도 **난수는 이미 6칸 전진해 있다** — 새로고침할 때마다
+   * 수열이 6칸씩 밀린다. 라인이 이미 이 rng를 붙들고 있으므로 새 인스턴스로는
+   * 되돌릴 수 없고, 제자리에서 상태를 되돌려야 한다.
+   */
+  loadState(state: RngState): void {
+    this.seedArray.set(state.s);
+    this.inext = state.i;
+    this.inextp = state.p;
   }
 
   /** 저장된 상태가 이 구현이 쓸 수 있는 모양인가 — 손상된 세이브를 조용히 받지 않는다. */

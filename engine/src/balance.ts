@@ -167,10 +167,28 @@ export interface BalanceData {
 }
 
 export class Balance {
-  constructor(readonly data: BalanceData) {}
+  /**
+   * 원작에서 **float(32비트)로 선언된 값들**을 그 정밀도로 내려 둔다.
+   *
+   * `LineCfg.conveyorSeconds`·`settleSeconds`와 `FeelCfg`의 시간 값은 C#에서 `float`이다.
+   * JSON에서 읽은 1.6은 배정밀도 1.6이지만 원작이 실제로 쓰는 값은 float32의 1.6(≈1.60000002…)이다.
+   * 그 차이를 남겨 두면 컨베이어가 1.0에 닿는 프레임이 어긋나고, 그 한 칸이 매입 타이밍을
+   * 바꾸고, 매입 타이밍이 난수 소비를 바꿔 세션 전체가 갈라진다 (적대적 리뷰 R5).
+   *
+   * 쓰는 자리마다 fround를 뿌리지 않고 **읽는 지점에서 한 번** 맞춘다 — 뿌리면 언젠가 빠뜨린다.
+   */
+  private readonly lineF32: LineCfg;
+
+  constructor(readonly data: BalanceData) {
+    this.lineF32 = {
+      ...data.line,
+      conveyorSeconds: Math.fround(data.line.conveyorSeconds),
+      settleSeconds: Math.fround(data.line.settleSeconds),
+    };
+  }
 
   get line() {
-    return this.data.line;
+    return this.lineF32;
   }
   get machine() {
     return this.data.machine;

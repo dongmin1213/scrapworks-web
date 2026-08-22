@@ -3,6 +3,7 @@ import fixtures from "../../golden/fixtures/core.json";
 import balanceJson from "../content/balance.json";
 import { Balance, type BalanceData } from "../src/balance";
 import { DotNetRandom } from "../src/rng";
+import { Session } from "../src/session";
 import { newGame, Workshop } from "../src/workshop";
 import { YardLine } from "../src/yardLine";
 
@@ -164,15 +165,17 @@ describe("시나리오 — 세션 전체를 원작과 나란히 돌린다", () =
   // 어긋나면 여기서 갈라진다 — 단위 픽스처가 절대 잡지 못하는 종류의 결함.
   it.each(fixtures.scenarios)(
     "$name",
-    ({ seed, seconds, toggleEverySec, buyGrade, maxGrade, unlockHelper, startCash, dt, final, events, trace }) => {
+    ({ seed, seconds, toggleEverySec, buyGrade, maxGrade, unlockHelper, unlockAutoBuy, startCash, dt, final, events, trace }) => {
       const w = new Workshop(balance, newGame(balance));
       w.d.maxGrade = maxGrade;
       w.earnCash(startCash);
-      if (unlockHelper) {
-        const n = balance.skill.nodes.find((x) => x.stat === "helper")!;
+      const unlock = (stat: string) => {
+        const n = balance.skill.nodes.find((x) => x.stat === stat)!;
         w.d.nodeIds.push(n.id);
         w.d.nodeLevels.push(1);
-      }
+      };
+      if (unlockHelper) unlock("helper");
+      if (unlockAutoBuy) unlock("autoBuy");
 
       const seenEvents: { t: string; [k: string]: unknown }[] = [];
       const rng = new DotNetRandom(seed);
@@ -189,11 +192,15 @@ describe("시나리오 — 세션 전체를 원작과 나란히 돌린다", () =
       const togglePeriod = toggleEverySec > 0 ? Math.round(toggleEverySec / step) : 0;
       let traceIdx = 0;
 
+      // **원작 GameMain.Update의 순서**(tick → autoBuy)를 Session이 소유한다
+      const session = new Session(balance, w, line);
+
       for (let i = 0; i < steps; i++) {
-        if (line.buyOffer(buyGrade)) seenEvents.push({ t: "buy", grade: buyGrade });
+        // buyGrade가 0이면 유저는 아무것도 누르지 않는다 — 자동매입만 도는 시나리오
+        if (buyGrade > 0 && line.buyOffer(buyGrade)) seenEvents.push({ t: "buy", grade: buyGrade });
         if (togglePeriod > 0 && i > 0 && i % togglePeriod === 0) line.toggleMode();
 
-        line.tick(step);
+        session.tick(step);
         if (line.pendingPickup) line.claimFind();
 
         if (i % 30 === 0) {

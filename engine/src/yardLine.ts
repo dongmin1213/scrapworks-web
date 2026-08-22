@@ -194,7 +194,17 @@ export class YardLine {
 
   // ---- 진행 ----
 
-  tick(dt: number): void {
+  /**
+   * 한 프레임 진행.
+   *
+   * **`dt`를 진입 시점에 float32로 내린다** — 원작 시그니처가 `Tick(float dt)`이기 때문이다.
+   * 브라우저의 rAF는 배정밀도 dt를 주므로 그대로 쓰면 원작과 미세하게 다른 값으로 계산되고,
+   * 골든은 float32 dt로 대조하니 **테스트는 통과하는데 실제 게임만 다른** 최악의 형태가 된다.
+   * 여기서 한 번 내리면 그 간극이 사라진다 (적대적 리뷰 R5:
+   * dt=1/60로 30틱 후 HP가 83.99999968… vs 83.99999999…로 갈렸다).
+   */
+  tick(rawDt: number): void {
+    const dt = f32(rawDt);
     if (this.queue.length === 0) return;
 
     if (this.settleT > 0) {
@@ -204,6 +214,8 @@ export class YardLine {
 
     // 컨베이어 이동 — 도착해야 해체가 시작된다
     if (this.conveyorT < 1) {
+      // 원작: `1f / Math.Max(0.05f, conveyorSeconds / (1f + (float)NodeSum(...)))`
+      // conveyorSeconds는 Balance가 이미 float32로 내려 준다.
       const speed = f32(
         1 /
           Math.max(
@@ -308,7 +320,7 @@ export class YardLine {
     this.completeInner(it);
     this.queue.shift();
     this.conveyorT = 0;
-    this.settleT = f32(this.balance.line.settleSeconds);
+    this.settleT = this.balance.line.settleSeconds; // Balance가 float32로 준다
     this.events.onItemDone?.(it);
   }
 

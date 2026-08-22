@@ -355,3 +355,44 @@ button.notice {
   text-align: center;
   color: var(--accent);
 }
+
+/*
+ * ── 탭 바 ──
+ * 원작은 하단 고정 4탭이다. 엄지가 닿는 곳이라 위로 올리지 않는다.
+ * (웹판은 매입이 작업장에 통합돼 3탭이다 — 매대가 한 화면에 다 들어간다)
+ */
+.tabs {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.tab {
+  position: relative;
+  flex: 1;
+  padding: 10px 4px;
+  font-size: 13px;
+  color: var(--ink-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.tab[data-active] {
+  color: var(--ink);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* 살 수 있는 것이 생겼다는 신호 — 탭을 하나씩 눌러 확인하게 만들지 않는다 */
+.tabDot {
+  position: absolute;
+  top: 6px;
+  right: calc(50% - 26px);
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+}

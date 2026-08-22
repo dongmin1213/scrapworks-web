@@ -223,11 +223,13 @@ static class Program
         RunScenario("mixed-mode", seed: 42, seconds: 180, toggleEverySec: 7, startCash: 20_000, buyGrade: 1),
         RunScenario("helper-lane", seed: 777, seconds: 240, toggleEverySec: 11, startCash: 500_000, buyGrade: 2, unlockHelper: true),
         RunScenario("high-grade", seed: 20250101, seconds: 300, toggleEverySec: 5, startCash: 5_000_000, buyGrade: 3, unlockHelper: true, maxGrade: 4),
+        // 자동매입 — 유저가 아무것도 누르지 않는다. 매대를 쓰지 않고 GameMain.AutoBuy만 돈다.
+        RunScenario("auto-buy", seed: 31337, seconds: 240, toggleEverySec: 0, startCash: 100_000, buyGrade: 0, maxGrade: 3, unlockAutoBuy: true),
     };
 
     static object RunScenario(
         string name, int seed, int seconds, int toggleEverySec, double startCash,
-        int buyGrade, bool unlockHelper = false, int maxGrade = 2)
+        int buyGrade, bool unlockHelper = false, int maxGrade = 2, bool unlockAutoBuy = false)
     {
         var B = Balance.Get();
         var w = new Workshop(null);
@@ -236,6 +238,9 @@ static class Program
         if (unlockHelper)
             foreach (var n in B.skill.nodes)
                 if (n.stat == "helper") { w.D.nodeIds.Add(n.id); w.D.nodeLevels.Add(1); break; }
+        if (unlockAutoBuy)
+            foreach (var n in B.skill.nodes)
+                if (n.stat == "autoBuy") { w.D.nodeIds.Add(n.id); w.D.nodeLevels.Add(1); break; }
 
         var line = new YardLine(w, seed);
         var offers = new Offers(line);   // 원작 BuyUI.Build — 여기서 6회 굴린다
@@ -255,11 +260,14 @@ static class Program
             // **매 스텝 매대의 그 등급을 눌러 본다** — 실패하면 난수를 쓰지 않고,
             // 성공하면 그 행만 다시 굴린다. 이식본이 이 규칙을 어기면(누를 때마다 굴리면)
             // 이후 발견물 난수가 전부 한 칸씩 밀려 여기서 갈라진다.
-            if (offers.Buy(buyGrade)) events.Add(new { t = "buy", grade = buyGrade });
+            // buyGrade가 0이면 유저는 아무것도 누르지 않는다 — 자동매입만 도는 시나리오
+            if (buyGrade > 0 && offers.Buy(buyGrade)) events.Add(new { t = "buy", grade = buyGrade });
 
             if (togglePeriod > 0 && i > 0 && i % togglePeriod == 0) line.ToggleMode();
 
+            // **원작 Update의 순서**: Tick 다음에 AutoBuy
             line.Tick(DT);
+            AutoBuy(w, line);
             if (line.PendingPickup != null) line.ClaimFind();
 
             if (i % 30 == 0) trace.Add(Snapshot(i * DT, w, line));
@@ -267,7 +275,7 @@ static class Program
 
         return new
         {
-            name, seed, seconds, toggleEverySec, buyGrade, maxGrade, unlockHelper, startCash, dt = DT,
+            name, seed, seconds, toggleEverySec, buyGrade, maxGrade, unlockHelper, unlockAutoBuy, startCash, dt = DT,
             final = new
             {
                 cash = R(w.Cash), scrap = R(w.Scrap), parts = R(w.Parts),
@@ -332,6 +340,18 @@ static class Program
             if (!line.Buy(grade, Cond[grade])) return false;
             Cond[grade] = line.RollCondition();
             return true;
+        }
+    }
+
+    /// GameMain.AutoBuy 재현 — **Tick 다음에 부른다** (원작 Update의 순서).
+    static void AutoBuy(Workshop w, YardLine line)
+    {
+        if (!w.AutoBuyUnlocked || line.Queue.Count > 0) return;
+        for (int g = line.MaxBuyableGrade; g >= 1; g--)
+        {
+            string cond = line.RollCondition();
+            if (Balance.Get().Condition(cond).hidden) continue;   // 미개봉은 자동으로 사지 않는다
+            if (line.CanBuy(g, cond)) { line.Buy(g, cond); return; }
         }
     }
 

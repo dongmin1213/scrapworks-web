@@ -1,0 +1,145 @@
+/*
+ * 스킬·상점 패널 공용 — 원작 SkillsUI/ShopUI가 같은 행 형태를 쓴다.
+ *
+ * 행 하나가 "무엇을 / 얼마에 / 지금 몇 단계인가"를 한 줄에 담는다. 값이 셋뿐이라
+ * 카드로 키우지 않고 목록으로 둔다 — 노드 12개·작업자 12명을 카드로 깔면 스크롤만 남는다.
+ */
+.panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+/* 이 패널에서 쓰는 통화 — 무엇으로 사는지가 맨 위에 있어야 한다 */
+.currency {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.currency strong {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--ink-3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.row:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.row:not(:disabled):active {
+  background: var(--surface-2);
+}
+
+/* 착용 중인 작업자 — 선택 상태는 색이 아니라 테두리로 말한다(색만 쓰면 대비가 약하다) */
+.row[data-active] {
+  border-color: var(--accent);
+  opacity: 1;
+}
+
+.rowMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: 14px;
+}
+
+.rowDesc {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+.rowSide {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.rowLevel {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.rowCost {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+/* 특수 자원 요구 — 부족한 항목만 눈에 띄게 한다 */
+.special {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--ink-3);
+}
+
+.special [data-short] {
+  color: var(--warn, #d08a3a);
+}
+
+.note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-line; /* rebirth.desc에 줄바꿈이 들어 있다 */
+  color: var(--ink-3);
+}
+
+/* 되돌릴 수 없는 조작 — 다른 버튼과 분명히 달라야 한다 */
+.rebirth {
+  padding: 10px;
+  font-size: 14px;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.rebirth:disabled {
+  color: var(--ink-3);
+  background: var(--surface-2);
+  cursor: default;
+}
