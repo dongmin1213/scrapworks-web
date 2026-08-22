@@ -143,3 +143,9 @@
   background: var(--surface-2);
   cursor: default;
 }
+
+/* 재확인 대기 — 색만으로 말하지 않는다. 문구도 바뀌고 테두리도 생긴다 */
+.rebirth[data-armed] {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}

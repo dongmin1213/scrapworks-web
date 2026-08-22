@@ -43,6 +43,9 @@ const LEGACY_KEYS = ["scrapworks.save.v1", "scrapworks.save.v2"];
  */
 const LEASE_KEY = "scrapworks.lease";
 
+/** 저장 락 이름 — `navigator.locks`가 read-check-write를 직렬화한다. */
+const SAVE_LOCK = "scrapworks.save.lock";
+
 /** 프레임마다 리렌더하지 않는다 — 60Hz setState는 React가 병목이 되고 배터리를 태운다. */
 const UI_HZ = 10;
 
@@ -52,6 +55,9 @@ const UI_HZ = 10;
  * 처리돼 화면이 건너뛴다. 그 시간은 버리는 게 아니라 **야간 작업조 정산**이 따로 갚는다.
  */
 const MAX_DT = 0.33333334;
+
+/** 환생 재확인 시간 — 원작 `SkillsUI.OnRebirth`의 3초. */
+const REBIRTH_CONFIRM_MS = 3000;
 
 export interface GameSnapshot {
   cash: number;
@@ -114,7 +120,7 @@ export interface GameSnapshot {
   nextOpCost: number | null;
   canBuyOp: boolean;
   /** 공방 이전(환생) */
-  rebirth: { certs: number; pending: number; mult: number; can: boolean };
+  rebirth: { certs: number; pending: number; mult: number; can: boolean; armed: boolean };
   /** 이 탭이 저장 권한을 갖고 있는가 — false면 다른 탭이 진행 중이다 */
   hasLease: boolean;
   /** 세이브 일부를 복구했다 (손상 감지) */
@@ -133,6 +139,11 @@ interface SaveFile {
   savedAtMs: number;
   /** 리비전 — 다른 탭이 더 새 저장을 남겼는지 판별한다 */
   rev: number;
+  /**
+   * 이 저장을 쓴 탭 — **동률 충돌을 가르는 열쇠다.**
+   * 리비전만으로는 "내가 쓴 N"과 "남이 쓴 N"을 구별할 수 없다.
+   */
+  owner?: string;
 }
 
 function readRaw(key: string): unknown {
@@ -165,6 +176,8 @@ export function useGame() {
     recovered: boolean;
     nightCash: number;
     rev: number;
+    /** 물건 완료 시 저장을 부르는 자리 — 훅이 준비되면 꽂는다 */
+    savePort: { current: (() => void) | null };
   }>();
 
   if (!boot.current) boot.current = bootstrap();
@@ -173,6 +186,20 @@ export function useGame() {
   const revRef = useRef(boot.current.rev);
   const [hasLease, setHasLease] = useState(true);
   const leaseId = useMemo(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`, []);
+
+  /**
+   * 공방 이전(환생) — **되돌릴 수 없으므로 두 번 눌러야 한다.**
+   *
+   * 원작 `SkillsUI.OnRebirth`가 첫 탭 후 3초 안에 다시 눌러야 실행한다.
+   * 그 3초가 "잘못 눌렀다"와 "정말 하겠다"를 가른다.
+   *
+   * **대기열은 건드리지 않는다.** 처음엔 "등급이 1로 돌아가는데 대기열에 등급 9가
+   * 남아 있으면 이상하다"고 비웠는데, 그건 원작에 없는 규칙이고 **이미 매입가를 낸
+   * 물건을 통째로 없애는 것**이다. 원작 `DoRebirth`는 지갑·노드·최고 등급만 되돌린다 —
+   * 대기열의 물건은 그대로 끝까지 처리된다 (적대적 리뷰 R6).
+   */
+  const [rebirthArmedUntil, setRebirthArmedUntil] = useState(0);
+  const rebirthArmed = rebirthArmedUntil > Date.now();
 
   const snapshot = useCallback(
     (lease: boolean): GameSnapshot => {
@@ -244,13 +271,15 @@ export function useGame() {
           pending: workshop.pendingCerts,
           mult: workshop.certMult,
           can: workshop.canRebirth,
+          /** 첫 탭이 끝나 재확인을 기다리는 중 — 화면이 "정말?"을 말해야 한다 */
+          armed: rebirthArmed,
         },
         hasLease: lease,
         saveRecovered: boot.current!.recovered,
         nightCash: boot.current!.nightCash,
       };
     },
-    [workshop, line],
+    [workshop, line, rebirthArmed],
   );
 
   const [state, setState] = useState<GameSnapshot>(() => snapshot(true));
@@ -304,31 +333,65 @@ export function useGame() {
     };
   }, [leaseId]);
 
+  /**
+   * 저장 — **read-check-write를 직렬화한다.**
+   *
+   * 리비전만 비교하는 것으로는 부족했다: 두 탭이 같은 저장 N에서 출발하면 둘 다
+   * `rev=N+1`을 들고 있고, 각자 기존 N을 읽어 "나보다 앞서지 않는다"고 판단한 뒤
+   * 같은 N+1을 쓴다. 나중에 쓴 쪽이 다른 탭의 진행을 덮는다 — **동률이 곧 충돌이다**
+   * (적대적 리뷰 R6).
+   *
+   * `navigator.locks`가 읽기-검사-쓰기를 한 덩어리로 만든다. 락이 없는 브라우저에서는
+   * 그냥 실행한다 — 그 경우 경합 창이 남지만, 저장을 아예 못 하는 것보다는 낫다.
+   */
   const save = useCallback(() => {
     if (!hasLease) return; // 소유권 없는 탭은 쓰지 않는다
-    try {
-      // **쓰기 직전에 한 번 더 본다.** 리스는 이벤트로 오는데, 이벤트가 늦거나
-      // 스토리지 이벤트를 못 받는 상황(같은 탭 다중 인스턴스)에서는 리스만으로 부족하다.
-      // 저장된 리비전이 우리보다 앞서면 우리가 낡은 것이므로 쓰지 않는다.
-      const existing = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
-      if (typeof existing?.rev === "number" && existing.rev > revRef.current) {
-        setHasLease(false);
-        return;
+
+    const write = () => {
+      try {
+        const existing = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
+        // **동률도 충돌이다.** 같은 리비전을 두 탭이 쓰면 하나가 조용히 사라진다.
+        // 우리 것이 확실히 더 새로울 때만(= 우리가 그 저장의 주인일 때만) 쓴다.
+        if (
+          typeof existing?.rev === "number" &&
+          existing.rev >= revRef.current &&
+          existing.owner !== leaseId
+        ) {
+          setHasLease(false);
+          return;
+        }
+        const nextRev = Math.max(revRef.current, (existing?.rev ?? 0) + 1);
+        const file: SaveFile = {
+          version: SAVE_VERSION,
+          d: workshop.d,
+          line: line.saveState(),
+          rng: boot.current!.rng.saveState(),
+          savedAtMs: Date.now(),
+          rev: nextRev,
+          owner: leaseId,
+        };
+        localStorage.setItem(SAVE_KEY, JSON.stringify(file));
+        revRef.current = nextRev;
+        for (const k of LEGACY_KEYS) localStorage.removeItem(k);
+      } catch {
+        // 저장 실패(프라이빗 모드·용량 초과)는 게임을 막지 않는다
       }
-      const file: SaveFile = {
-        version: SAVE_VERSION,
-        d: workshop.d,
-        line: line.saveState(),
-        rng: boot.current!.rng.saveState(),
-        savedAtMs: Date.now(),
-        rev: ++revRef.current,
-      };
-      localStorage.setItem(SAVE_KEY, JSON.stringify(file));
-      for (const k of LEGACY_KEYS) localStorage.removeItem(k);
-    } catch {
-      // 저장 실패(프라이빗 모드·용량 초과)는 게임을 막지 않는다
+    };
+
+    if (typeof navigator !== "undefined" && navigator.locks) {
+      void navigator.locks.request(SAVE_LOCK, write);
+    } else {
+      write();
     }
-  }, [hasLease, workshop, line]);
+  }, [hasLease, workshop, line, leaseId]);
+
+  // 저장 함수가 준비되면 엔진 콜백에 꽂는다 — 자동 완료도 즉시 저장된다
+  useEffect(() => {
+    boot.current!.savePort.current = save;
+    return () => {
+      boot.current!.savePort.current = null;
+    };
+  }, [save]);
 
   // ── 게임 루프 ──
   useEffect(() => {
@@ -340,6 +403,13 @@ export function useGame() {
     const loop = (now: number) => {
       const dt = Math.min(MAX_DT, (now - last) / 1000);
       last = now;
+      // **리스를 잃었으면 진행하지 않는다.** 전에는 루프가 계속 돌아
+      // 화면 수치는 올라가는데 저장은 안 되는 상태였다 — 유저는 10분을 놀고
+      // 새로고침하면 전부 사라진 것을 본다 (적대적 리뷰 R6). 멈추는 편이 정직하다.
+      if (!hasLease) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
       // **Session이 원작 GameMain.Update의 순서를 소유한다** (tick → autoBuy).
       // 여기서 line.tick만 부르면 자동매입 노드를 사도 아무 일도 일어나지 않는다.
       session.tick(dt);
@@ -387,62 +457,88 @@ export function useGame() {
     save();
   }, [snapshot, hasLease, save]);
 
+  /**
+   * 조작 차단 — 리스가 없으면 **아무것도 바꾸지 않는다.**
+   *
+   * 저장만 막고 조작을 허용하면 그 조작이 조용히 버려진다. 유저 입장에서는
+   * 눌렀는데 나중에 없던 일이 되는 것이라, 아예 안 눌리는 편이 낫다.
+   */
+  const guard = useCallback(
+    (fn: () => void) => {
+      if (!hasLease) return;
+      fn();
+    },
+    [hasLease],
+  );
+
   /** 매대에서 산다 — **엔진이 재고를 소유한다.** 화면은 상태를 굴리지 않는다. */
   const buy = useCallback(
-    (grade: number) => {
-      if (line.buyOffer(grade)) commit();
-      else setState(snapshot(hasLease));
-    },
-    [line, commit, snapshot, hasLease],
+    (grade: number) =>
+      guard(() => {
+        if (line.buyOffer(grade)) commit();
+        else setState(snapshot(hasLease));
+      }),
+    [guard, line, commit, snapshot, hasLease],
   );
 
   // 축 전환은 재화가 오가지 않는다 — 다음 주기 저장에 실려도 잃을 것이 없다
   const setMode = useCallback(
-    (mode: "smash" | "strip") => {
-      line.setMode(mode);
-      setState(snapshot(hasLease));
-    },
-    [line, snapshot, hasLease],
+    (mode: "smash" | "strip") =>
+      guard(() => {
+        line.setMode(mode);
+        setState(snapshot(hasLease));
+      }),
+    [guard, line, snapshot, hasLease],
   );
 
-  const claimFind = useCallback(() => {
-    if (line.claimFind()) commit();
-  }, [line, commit]);
+  const claimFind = useCallback(
+    () => guard(() => { if (line.claimFind()) commit(); }),
+    [guard, line, commit],
+  );
 
   const buyNode = useCallback(
-    (id: string) => {
-      if (workshop.buyNode(id)) commit();
-    },
-    [workshop, commit],
+    (id: string) => guard(() => { if (workshop.buyNode(id)) commit(); }),
+    [guard, workshop, commit],
   );
 
   const buyTool = useCallback(
-    (smash: boolean) => {
-      if (workshop.buyTool(smash)) commit();
-    },
-    [workshop, commit],
+    (smash: boolean) => guard(() => { if (workshop.buyTool(smash)) commit(); }),
+    [guard, workshop, commit],
   );
 
-  const buyOp = useCallback(() => {
-    if (workshop.buyOp()) commit();
-  }, [workshop, commit]);
+  const buyOp = useCallback(
+    () => guard(() => { if (workshop.buyOp()) commit(); }),
+    [guard, workshop, commit],
+  );
 
   const equipOp = useCallback(
-    (rank: number) => {
-      workshop.equip(rank);
-      commit();
-    },
-    [workshop, commit],
+    (rank: number) => guard(() => { workshop.equip(rank); commit(); }),
+    [guard, workshop, commit],
   );
 
+  // 3초가 지나면 버튼 문구가 되돌아가야 한다 — 무장 상태가 화면에 계속 남으면
+  // 다음에 무심코 눌렀을 때 곧바로 실행된다
+  useEffect(() => {
+    if (rebirthArmedUntil === 0) return;
+    const id = window.setTimeout(
+      () => setRebirthArmedUntil(0),
+      Math.max(0, rebirthArmedUntil - Date.now()),
+    );
+    return () => window.clearTimeout(id);
+  }, [rebirthArmedUntil]);
+
   const rebirth = useCallback(() => {
+    if (!hasLease) return;
+    if (!workshop.canRebirth) return;
+    if (Date.now() > rebirthArmedUntil) {
+      setRebirthArmedUntil(Date.now() + REBIRTH_CONFIRM_MS);
+      return;
+    }
     if (workshop.doRebirth()) {
-      // 환생은 라인도 비워야 한다 — 등급이 1로 돌아가는데 대기열에 등급 9가 남아 있으면
-      // 살 수 없는 물건을 처리하고 있는 이상한 상태가 된다
-      line.restoreState({ queue: [], offers: line.offers, mode: line.mode, conveyorT: 0, settleT: 0, pendingPickup: null, pendingPickupCash: 0 });
+      setRebirthArmedUntil(0);
       commit();
     }
-  }, [workshop, line, commit]);
+  }, [hasLease, workshop, commit, rebirthArmedUntil]);
 
   return { state, balance, workshop, buy, setMode, claimFind, buyNode, buyTool, buyOp, equipOp, rebirth };
 }
@@ -464,7 +560,20 @@ function bootstrap() {
   const rng = new DotNetRandom((Math.random() * 0x7fffffff) | 0);
   const savedRng = file?.rng && DotNetRandom.isValidState(file.rng) ? file.rng : null;
 
-  const line = new YardLine(balance, workshop, rng);
+  /**
+   * 물건 하나가 끝나면 **즉시 저장한다** — 원작 `YardUI`도 완료 처리에서 Save를 부른다.
+   *
+   * 직접 조작(구매·수령·구입)만 즉시 저장하게 해 뒀는데, 이 게임은 **가만히 둬도
+   * 진행된다.** 자동으로 해체가 끝나 자원이 들어온 직후 브라우저가 죽으면 그 물건은
+   * 매입가만 낸 채 사라진다 (적대적 리뷰 R6).
+   *
+   * 저장 함수는 훅이 만들므로 여기서 직접 부를 수 없다 — **포트를 하나 두고**
+   * 훅이 준비되면 꽂는다. 꽂히기 전(부팅 중)에는 아무 일도 하지 않는다.
+   */
+  const savePort: { current: (() => void) | null } = { current: null };
+  const line = new YardLine(balance, workshop, rng, {
+    onItemDone: () => savePort.current?.(),
+  });
   let recovered = !intact;
   if (file?.line) {
     if (!line.restoreState(file.line)) recovered = true;
@@ -508,6 +617,7 @@ function bootstrap() {
         rng: rng.saveState(),
         savedAtMs: now,
         rev,
+        owner: file?.owner,
       };
       localStorage.setItem(SAVE_KEY, JSON.stringify(file2));
     } catch {
@@ -515,5 +625,5 @@ function bootstrap() {
     }
   }
 
-  return { balance, workshop, line, session, rng, recovered, nightCash, rev };
+  return { balance, workshop, line, session, rng, recovered, nightCash, rev, savePort };
 }

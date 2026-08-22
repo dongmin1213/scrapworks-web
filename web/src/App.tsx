@@ -42,7 +42,8 @@ export function App() {
             않는다는 사실. 특히 마지막은 모르고 계속 놀면 진행이 통째로 날아간다. */}
         {!state.hasLease && (
           <p className={styles.notice} role="status">
-            다른 탭에서 게임이 열려 있습니다 — 이 탭은 저장하지 않습니다
+            다른 탭에서 게임이 진행 중입니다 — 이 탭은 <strong>멈춰 있습니다</strong>.
+            새로고침하면 최신 상태로 이어집니다.
           </p>
         )}
         {state.saveRecovered && (

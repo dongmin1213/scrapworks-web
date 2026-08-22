@@ -432,10 +432,20 @@ export class YardLine {
     const s = v as Partial<YardState>;
     let intact = true;
 
-    if (Array.isArray(s.offers)) {
-      for (const o of s.offers) {
-        const row = this.offers.find((x) => x.grade === o?.grade);
-        if (row && typeof o.conditionId === "string" && this.hasCondition(o.conditionId)) {
+    // **매대는 등급 1~6이 정확히 한 번씩 있어야 한다.** 개수만 맞추거나 빈 배열을
+    // 통과시키면, 생성자가 임시 난수로 만든 매물이 그대로 남은 채 난수만 저장 시점으로
+    // 되감긴다 — 손상 알림도 없이 매대와 수열의 시점이 어긋난다 (적대적 리뷰 R6).
+    const offerGrades = Array.isArray(s.offers)
+      ? s.offers.map((o) => (o as BuyOffer | undefined)?.grade)
+      : [];
+    const offersComplete =
+      offerGrades.length === this.offers.length &&
+      this.offers.every((row) => offerGrades.filter((g) => g === row.grade).length === 1);
+
+    if (offersComplete) {
+      for (const o of s.offers as BuyOffer[]) {
+        const row = this.offers.find((x) => x.grade === o.grade)!;
+        if (typeof o.conditionId === "string" && this.hasCondition(o.conditionId)) {
           row.conditionId = o.conditionId;
         } else {
           intact = false;
@@ -448,6 +458,12 @@ export class YardLine {
     this.queue.length = 0;
     if (Array.isArray(s.queue)) {
       for (const raw of s.queue) {
+        // **대기열 칸수를 넘길 수 없다.** 넘기면 규칙상 불가능한 상태이고,
+        // 수천 개를 넣으면 매 프레임 그 전부를 도는 상태가 된다.
+        if (this.queue.length >= this.queueSlots) {
+          intact = false;
+          break;
+        }
         const it = this.sanitizeItem(raw);
         if (it) this.queue.push(it);
         else intact = false;
@@ -476,24 +492,31 @@ export class YardLine {
   private sanitizeItem(raw: unknown): Item | null {
     if (typeof raw !== "object" || raw === null) return null;
     const r = raw as Partial<Item>;
-    if (!Number.isFinite(r.grade) || (r.grade as number) < 1) return null;
+    // 등급은 **상한이 있다** — 넘기면 `buyPrice`·`durability`의 지수가 폭주해 Infinity가 된다
+    if (!Number.isFinite(r.grade)) return null;
+    const grade = Math.floor(r.grade as number);
+    if (grade < 1 || grade > this.balance.machine.gradeCap) return null;
     if (typeof r.conditionId !== "string" || !this.hasCondition(r.conditionId)) return null;
 
-    const maxHp = num(r.maxHp, 0);
+    // **내구도는 등급과 상태가 정한다.** 저장값을 그대로 믿으면 조작한 maxHp로
+    // 즉시 완료시켜 무한히 정산할 수 있다 — 계산값으로 덮는다.
+    const cond = this.balance.condition(r.conditionId);
+    const maxHp = this.balance.durability(grade) * cond.durMult;
     if (!(maxHp > 0)) return null;
 
     // 체력은 0..maxHp, 누적 데미지는 부수기 몫이 전체를 넘을 수 없다 — 넘으면 stripFrac이 음수가 되고
     // 정산 배수가 뒤집힌다. 조작된 세이브로 자원을 뽑는 경로를 여기서 막는다.
     const totalDmg = Math.max(0, Math.min(maxHp, num(r.totalDmg, 0)));
     return {
-      grade: Math.floor(r.grade as number),
+      grade,
       conditionId: r.conditionId,
       revealed: r.revealed === true,
       maxHp,
       hp: Math.max(0, Math.min(maxHp, num(r.hp, maxHp))),
       smashDmg: Math.max(0, Math.min(totalDmg, num(r.smashDmg, 0))),
       totalDmg,
-      dropAcc: Math.max(0, num(r.dropAcc, 0)),
+      // dropAcc는 항상 1 미만이다(1이 되면 그 자리에서 드랍으로 소비된다)
+      dropAcc: Math.min(0.999, Math.max(0, num(r.dropAcc, 0))),
       pendingFind:
         typeof r.pendingFind === "string" && this.balance.findItemOf(r.pendingFind)
           ? r.pendingFind

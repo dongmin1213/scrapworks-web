@@ -21,6 +21,11 @@ function fresh() {
   return { w, line: new YardLine(balance, w, new DotNetRandom(1)) };
 }
 
+/** 밸런스까지 함께 돌려주는 리그 — 기대값을 테스트가 다시 계산하지 않게 한다. */
+function freshWithBalance() {
+  return { balance, ...fresh() };
+}
+
 describe("sanitizeSave — 망가진 저장을 받아도 게임은 계속된다", () => {
   it("정상 저장은 그대로 복원되고 intact다", () => {
     const { w } = fresh();
@@ -156,5 +161,69 @@ describe("난수 상태 왕복 — 새로고침으로 결과를 다시 뽑을 �
     expect(DotNetRandom.isValidState(null)).toBe(false);
     expect(DotNetRandom.isValidState({ s: [1, 2], i: 0, p: 21 })).toBe(false);
     expect(DotNetRandom.isValidState({ s: Array(56).fill(0), i: 0, p: 21 })).toBe(true);
+  });
+});
+
+/**
+ * 세이브 일관성 — **"파싱된다"와 "규칙상 가능하다"는 다르다.**
+ *
+ * 앞의 검사들은 타입만 봤다. 그래서 등급 1000짜리 물건, 대기열 수천 개,
+ * 조작된 maxHp, 범위 밖 난수 커서가 전부 통과했다 — 전부 규칙상 존재할 수 없는 상태다
+ * (적대적 리뷰 R6).
+ */
+describe("세이브 일관성 — 규칙상 불가능한 상태는 받지 않는다", () => {
+  it("등급 상한을 넘는 물건은 버린다 — 지수 수식이 Infinity로 간다", () => {
+    const { line } = fresh();
+    line.restoreState({
+      offers: line.offers,
+      queue: [{ grade: 1000, conditionId: "cond-normal", maxHp: 10, hp: 5 }],
+      conveyorT: 1,
+    });
+    expect(line.queue).toHaveLength(0);
+  });
+
+  it("대기열 칸수를 넘기지 않는다", () => {
+    const { line } = fresh();
+    const many = Array.from({ length: 500 }, () => ({
+      grade: 1,
+      conditionId: "cond-normal",
+      maxHp: 90,
+      hp: 90,
+    }));
+    line.restoreState({ offers: line.offers, queue: many, conveyorT: 1 });
+    expect(line.queue.length).toBeLessThanOrEqual(line.queueSlots);
+  });
+
+  it("조작된 maxHp는 등급·상태가 정하는 값으로 덮인다", () => {
+    const { balance, line } = freshWithBalance();
+    line.restoreState({
+      offers: line.offers,
+      // maxHp를 0.001로 낮추면 즉시 완료돼 무한 정산이 된다
+      queue: [{ grade: 1, conditionId: "cond-normal", maxHp: 0.001, hp: 0.001 }],
+      conveyorT: 1,
+    });
+    const expected = balance.durability(1) * balance.condition("cond-normal").durMult;
+    expect(line.queue[0].maxHp).toBeCloseTo(expected, 9);
+  });
+
+  it("매대가 등급 1~6을 정확히 한 번씩 갖지 않으면 온전하지 않다고 본다", () => {
+    const { line } = fresh();
+    // 빈 배열도 배열이지만, 그러면 생성자가 만든 임시 매물이 남은 채 난수만 되감긴다
+    expect(line.restoreState({ offers: [], queue: [], conveyorT: 0 })).toBe(false);
+    expect(
+      line.restoreState({
+        offers: [{ grade: 1, conditionId: "cond-normal" }],
+        queue: [],
+        conveyorT: 0,
+      }),
+    ).toBe(false);
+  });
+
+  it("난수 커서가 범위를 벗어나면 거부한다 — NaN이 수열을 죽인다", () => {
+    const valid = new DotNetRandom(1).saveState();
+    expect(DotNetRandom.isValidState({ ...valid, i: 999 })).toBe(false);
+    expect(DotNetRandom.isValidState({ ...valid, p: -20 })).toBe(false);
+    expect(DotNetRandom.isValidState({ ...valid, s: valid.s.map(() => 2 ** 40) })).toBe(false);
+    expect(DotNetRandom.isValidState(valid)).toBe(true);
   });
 });

@@ -39,7 +39,7 @@ export function ShopPanel(props: {
   ops: OpRow[];
   nextOpCost: number | null;
   canBuyOp: boolean;
-  rebirth: { certs: number; pending: number; mult: number; can: boolean };
+  rebirth: { certs: number; pending: number; mult: number; can: boolean; armed: boolean };
   onBuyTool: (smash: boolean) => void;
   onBuyOp: () => void;
   onEquip: (rank: number) => void;
@@ -126,14 +126,18 @@ export function ShopPanel(props: {
           {" · "}
           {t("rebirth.pending").replace("{0}", String(props.rebirth.pending))}
         </p>
+        {/* **두 번 눌러야 실행된다** (원작 3초 재확인). 첫 탭 뒤에는 문구가 바뀌어
+            "다음 탭이 진짜"라는 것을 말한다 — 되돌릴 수 없는 조작이다. */}
         <button
           type="button"
           className={styles.rebirth}
+          data-armed={props.rebirth.armed || undefined}
           disabled={!props.rebirth.can}
           onClick={props.onRebirth}
         >
-          {t("rebirth.go")}
+          {props.rebirth.armed ? `! ${t("rebirth.go")} !` : t("rebirth.go")}
         </button>
+        {props.rebirth.armed && <p className={styles.note}>한 번 더 누르면 실행됩니다 (3초)</p>}
       </section>
     </div>
   );

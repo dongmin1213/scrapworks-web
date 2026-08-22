@@ -15,8 +15,10 @@ import { describe, expect, it } from "vitest";
  * 여기서는 원작 소스를 **읽어서** 재현이 기대는 성질이 아직 그대로인지 확인한다.
  * 원작이 바뀌면 이 테스트가 먼저 깨져서 하네스를 고칠 신호를 준다.
  *
- * **원작 레포가 없으면 건너뛴다** — CI나 남의 기계에서는 형제 폴더가 없을 수 있고,
+ * **원작 레포가 없으면 로컬에서는 건너뛴다** — 남의 기계에는 형제 폴더가 없을 수 있고,
  * 그때 빨간불을 내면 아무도 신뢰하지 않는 테스트가 된다. 대신 건너뛴 사실을 남긴다.
+ * 다만 `GOLDEN_REQUIRE=1`(CI·릴리스)에서는 **없다는 사실 자체가 실패다** —
+ * 건너뛰기가 곧 fail-open이기 때문이다.
  */
 
 const ORIGIN = fileURLToPath(new URL("../../../scrapworks/unity/Assets/Scripts/", import.meta.url));
@@ -34,6 +36,13 @@ function stripComments(code: string): string {
 const buyUi = source("Workshop/BuyUI.cs");
 const gameMain = source("Shared/GameMain.cs");
 const available = buyUi !== null && gameMain !== null;
+
+/**
+ * **CI에서는 건너뛰기가 곧 fail-open이다.** 원작이 없는 머신에서 skip으로 통과하면,
+ * 하네스의 재현이 원작과 갈라졌는지 아무도 모른 채 배포된다(적대적 리뷰 R6).
+ * `GOLDEN_REQUIRE=1`이면 원작이 없다는 사실 자체를 실패로 본다.
+ */
+const required = process.env.GOLDEN_REQUIRE === "1";
 
 describe.skipIf(!available)("원작 BuyUI — 하네스의 매대 재현이 기대는 성질", () => {
   it("등급 1~6을 훑어 행을 만든다 (하네스 OfferRows=6의 근거)", () => {
@@ -92,14 +101,12 @@ describe.skipIf(!available)("원작 GameMain — 하네스의 틱 순서·자동
 });
 
 describe("원작 레포 접근성", () => {
-  it("원작을 찾지 못하면 그 사실을 남긴다", () => {
-    if (!available) {
-      // 실패시키지 않는다 — 다만 조용히 넘어가지도 않는다.
-      console.warn(
-        `[원작 소스 계약] ${ORIGIN} 를 찾지 못해 건너뛰었다. ` +
-          "하네스의 BuyUI·GameMain 재현이 원작과 같은지 확인되지 않았다.",
-      );
-    }
-    expect(true).toBe(true);
+  it("원작을 찾지 못하면 그 사실을 남긴다 (CI에서는 실패한다)", () => {
+    if (available) return;
+    const message =
+      `[원작 소스 계약] ${ORIGIN} 를 찾지 못했다. ` +
+      "하네스의 BuyUI·GameMain 재현이 원작과 같은지 확인되지 않았다.";
+    if (required) throw new Error(`${message} (GOLDEN_REQUIRE=1)`);
+    console.warn(message);
   });
 });

@@ -110,16 +110,24 @@ export class DotNetRandom {
     this.inextp = state.p;
   }
 
-  /** 저장된 상태가 이 구현이 쓸 수 있는 모양인가 — 손상된 세이브를 조용히 받지 않는다. */
+  /**
+   * 저장된 상태가 이 구현이 쓸 수 있는 모양인가 — 손상된 세이브를 조용히 받지 않는다.
+   *
+   * **커서와 값의 범위까지 본다.** 길이·정수만 확인하면 `i=999`나 거대한 값이 통과하고,
+   * 그 상태로 `internalSample`이 배열 밖을 읽어 `undefined`가 섞인다
+   * (`undefined - n`은 NaN이고, NaN이 한 번 들어가면 수열이 통째로 죽는다).
+   */
   static isValidState(v: unknown): v is RngState {
     if (typeof v !== "object" || v === null) return false;
     const s = v as Partial<RngState>;
+    const inCursorRange = (n: unknown) => Number.isInteger(n) && (n as number) >= 0 && (n as number) < 56;
     return (
       Array.isArray(s.s) &&
       s.s.length === 56 &&
-      s.s.every((n) => Number.isInteger(n)) &&
-      Number.isInteger(s.i) &&
-      Number.isInteger(s.p)
+      // 시드 배열의 값은 감산식 생성기의 상태라 0..MBIG 범위다
+      s.s.every((n) => Number.isInteger(n) && n >= 0 && n <= MBIG) &&
+      inCursorRange(s.i) &&
+      inCursorRange(s.p)
     );
   }
 }

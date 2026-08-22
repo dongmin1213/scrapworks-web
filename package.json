@@ -6,7 +6,7 @@
     "test": "pnpm golden:verify && vitest run",
     "golden": "SCRAP_BALANCE_PATH=${SCRAP_BALANCE_PATH:-../scrapworks/unity/Assets/Resources/balance.json} dotnet run --project golden/harness -c Release -- golden/fixtures/core.json",
     "build": "pnpm -C web build",
-    "bundle": "pnpm golden:verify && scripts/make-bundle.sh",
+    "bundle": "GOLDEN_REQUIRE=1 pnpm golden:verify && scripts/make-bundle.sh",
     "typecheck": "tsc --noEmit",
     "golden:verify": "scripts/golden-verify.sh"
   },
