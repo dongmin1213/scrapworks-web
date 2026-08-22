@@ -290,3 +290,91 @@ function expectSnapshot(
     expect(cur!.revealed, `${label} 개봉`).toBe(want.revealed);
   }
 }
+
+/**
+ * 구매·환생 전이 — **명령열을 그대로 돌린다.**
+ *
+ * 비용 수식만 대조하면 `buyTool(false)`가 stripTier 대신 smashTier를 올리거나
+ * 특수 자원을 안 깎아도 통과한다 — 골든이 그 메서드를 부르지 않기 때문이다
+ * (적대적 리뷰 R7-20). 여기서는 하네스가 원작에 먹인 것과 **같은 명령을 같은 순서로**
+ * 먹이고 매 단계의 상태를 대조한다.
+ */
+describe("구매·환생 전이", () => {
+  it("원작과 같은 명령열이 같은 상태를 만든다", () => {
+    const w = new Workshop(balance, newGame(balance));
+    w.earnScrap(1e9);
+    w.earnParts(1e9);
+    w.earnSpecial(1e6, 1e6, 1e6);
+    w.earnCash(1e9);
+
+    const steps = fixtures.purchases;
+    let i = 0;
+
+    const check = (action: string) => {
+      const want = steps[i++];
+      expect(want, `픽스처가 ${action}에서 끝났다 — 명령열이 어긋난다`).toBeDefined();
+      expect(want.action, `${i}번째 명령이 다르다`).toBe(action);
+
+      expectClose(w.scrap, want.scrap, `${action} 고철`);
+      expectClose(w.parts, want.parts, `${action} 부품`);
+      expectClose(w.copper, want.copper, `${action} 구리`);
+      expectClose(w.boards, want.boards, `${action} 기판`);
+      expectClose(w.cores, want.cores, `${action} 코어`);
+      expect(w.smashTier, `${action} 부수기 티어`).toBe(want.smashTier);
+      expect(w.stripTier, `${action} 뜯기 티어`).toBe(want.stripTier);
+      expect(w.d.opRank, `${action} 작업자 단수`).toBe(want.opRank);
+      expect(w.d.opEquipped, `${action} 착용`).toBe(want.opEquipped);
+      expect(w.op.id, `${action} 작업자`).toBe(want.op);
+      expect(w.d.maxGrade, `${action} 최고등급`).toBe(want.maxGrade);
+      expect(w.certs, `${action} 인증`).toBe(want.certs);
+      expectClose(w.d.cumScrap, want.cumScrap, `${action} 누적고철`);
+      expect(
+        w.d.nodeIds.map((id, n) => ({ id, lv: w.d.nodeLevels[n] })),
+        `${action} 노드`,
+      ).toEqual(want.nodes);
+      expectClose(w.smashDps, want.smashDps, `${action} 부수기 속도`);
+      expectClose(w.stripDps, want.stripDps, `${action} 뜯기 속도`);
+      expectClose(w.scrapVal, want.scrapVal, `${action} 고철 배수`);
+      expectClose(w.partsVal, want.partsVal, `${action} 부품 배수`);
+      expectClose(w.cashVal, want.cashVal, `${action} 현금 배수`);
+      expectClose(w.findBonus, want.findBonus, `${action} 발견 보너스`);
+      expect(w.helperUnlocked, `${action} 보조 해금`).toBe(want.helper);
+      expect(w.autoBuyUnlocked, `${action} 자동매입 해금`).toBe(want.autoBuy);
+    };
+
+    check("start");
+
+    for (const n of balance.skill.nodes) {
+      const ok = w.buyNode(n.id);
+      check(`buyNode:${n.id}:${ok ? "True" : "False"}`);
+    }
+    const first = balance.skill.nodes[0];
+    for (let k = w.nodeLv(first.id); k < first.max + 2; k++) {
+      const ok = w.buyNode(first.id);
+      check(`buyNode:${first.id}:${ok ? "True" : "False"}`);
+    }
+
+    for (let k = 0; k < balance.tool.tierCount + 1; k++) {
+      check(`buyTool:smash:${w.buyTool(true) ? "True" : "False"}`);
+      check(`buyTool:strip:${w.buyTool(false) ? "True" : "False"}`);
+    }
+
+    for (let k = 0; k < balance.shop.operators.length + 1; k++) {
+      check(`buyOp:${w.buyOp() ? "True" : "False"}`);
+    }
+    w.equip(1);
+    check("equip:1");
+    w.equip(999);
+    check("equip:999");
+    w.equip(0);
+    check("equip:0");
+
+    check(`canRebirth:${w.canRebirth ? "True" : "False"}`);
+    w.doRebirth();
+    check("rebirth");
+    w.doRebirth();
+    check("rebirth-again");
+
+    expect(i, "픽스처에 안 쓴 단계가 남았다").toBe(steps.length);
+  });
+});

@@ -2342,6 +2342,4259 @@
       }
     ]
   },
+  "purchases": [
+    {
+      "action": "start",
+      "scrap": 1000000000,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [],
+      "smashDps": 12,
+      "stripDps": 4.8,
+      "scrapVal": 1,
+      "partsVal": 1,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999999995,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        }
+      ],
+      "smashDps": 13.4,
+      "stripDps": 4.8,
+      "scrapVal": 1,
+      "partsVal": 1,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:body-strip:True",
+      "scrap": 999999990,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        }
+      ],
+      "smashDps": 13.4,
+      "stripDps": 5.4,
+      "scrapVal": 1,
+      "partsVal": 1,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:body-smash-pct:True",
+      "scrap": 999999790,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.4,
+      "scrapVal": 1,
+      "partsVal": 1,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:body-strip-pct:True",
+      "scrap": 999999590,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1,
+      "partsVal": 1,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yield-scrap:True",
+      "scrap": 999999450,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yield-parts:True",
+      "scrap": 999999130,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yield-cash:True",
+      "scrap": 999998870,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yield-find:True",
+      "scrap": 999998450,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yard-queue:True",
+      "scrap": 999997850,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yard-conveyor:True",
+      "scrap": 999997670,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "buyNode:yard-autobuy:True",
+      "scrap": 999996170,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": false,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:yard-helper:True",
+      "scrap": 999992170,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 1
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 14.204,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992164.25,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 2
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 15.688,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992157.6375,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 3
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 17.172,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992150.033125,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 4
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 18.656,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992141.2880938,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 5
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 20.14,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992131.2313079,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 6
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 21.624,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992119.6660041,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 7
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 23.108,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992106.3659047,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 8
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 24.592,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992091.0707904,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 9
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 26.076,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992073.481409,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 10
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 27.56,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992053.2536203,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 11
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 29.044,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992029.9916633,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 12
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 30.528,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999992003.2404128,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 13
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 32.012,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991972.4764748,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 14
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 33.496,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991937.0979459,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 15
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 34.98,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991896.4126378,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 16
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 36.464,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991849.6245334,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 17
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 37.948,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991795.8182133,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 18
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 39.432,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991733.9409453,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 19
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 40.916,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:True",
+      "scrap": 999991662.7820871,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 42.4,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:False",
+      "scrap": 999991662.7820871,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 42.4,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyNode:body-smash:False",
+      "scrap": 999991662.7820871,
+      "parts": 1000000000,
+      "copper": 1000000,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 1,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 42.4,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:smash:True",
+      "scrap": 999991662.7820871,
+      "parts": 999998208,
+      "copper": 999960,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 2,
+      "stripTier": 1,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 80.56,
+      "stripDps": 5.724,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:strip:True",
+      "scrap": 999991662.7820871,
+      "parts": 999996416,
+      "copper": 999930,
+      "boards": 1000000,
+      "cores": 1000000,
+      "smashTier": 2,
+      "stripTier": 2,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 80.56,
+      "stripDps": 10.8756,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:smash:True",
+      "scrap": 999991662.7820871,
+      "parts": 999990681.6,
+      "copper": 999930,
+      "boards": 999940,
+      "cores": 1000000,
+      "smashTier": 3,
+      "stripTier": 2,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 153.064,
+      "stripDps": 10.8756,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:strip:True",
+      "scrap": 999991662.7820871,
+      "parts": 999984947.2,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 1000000,
+      "smashTier": 3,
+      "stripTier": 3,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 153.064,
+      "stripDps": 20.66364,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:smash:True",
+      "scrap": 999991662.7820871,
+      "parts": 999966597.12,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999920,
+      "smashTier": 4,
+      "stripTier": 3,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 20.66364,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:strip:True",
+      "scrap": 999991662.7820871,
+      "parts": 999948247.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:smash:False",
+      "scrap": 999991662.7820871,
+      "parts": 999948247.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:strip:False",
+      "scrap": 999991662.7820871,
+      "parts": 999948247.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:smash:False",
+      "scrap": 999991662.7820871,
+      "parts": 999948247.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyTool:strip:False",
+      "scrap": 999991662.7820871,
+      "parts": 999948247.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 1,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999948147.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 2,
+      "opEquipped": 2,
+      "op": "op-mechanic",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 46.668636,
+      "scrapVal": 1.08,
+      "partsVal": 1.38,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999947887.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 3,
+      "opEquipped": 3,
+      "op": "op-breaker",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 359.4116,
+      "stripDps": 39.260916,
+      "scrapVal": 1.38,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999947211.04,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 4,
+      "opEquipped": 4,
+      "op": "op-welder",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 386.8476,
+      "stripDps": 39.260916,
+      "scrapVal": 1.28,
+      "partsVal": 1.08,
+      "cashVal": 1.22,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999945453.44,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 5,
+      "opEquipped": 5,
+      "op": "op-electrician",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 54.076356,
+      "scrapVal": 1.08,
+      "partsVal": 1.33,
+      "cashVal": 1.07,
+      "findBonus": 0.2,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999940883.68,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 6,
+      "opEquipped": 6,
+      "op": "op-heavy",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 455.4376,
+      "stripDps": 39.260916,
+      "scrapVal": 1.33,
+      "partsVal": 1.08,
+      "cashVal": 1.27,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999929002.3039999,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 7,
+      "opEquipped": 7,
+      "op": "op-surveyor",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 48.520566,
+      "scrapVal": 1.08,
+      "partsVal": 1.58,
+      "cashVal": 1.07,
+      "findBonus": 0.3,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999898110.7263999,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 8,
+      "opEquipped": 8,
+      "op": "op-supervisor",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.48,
+      "partsVal": 1.48,
+      "cashVal": 1.47,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999817792.6246399,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 9,
+      "opEquipped": 9,
+      "op": "op-exosuit",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 428.0016,
+      "stripDps": 57.780216,
+      "scrapVal": 1.28,
+      "partsVal": 1.28,
+      "cashVal": 1.27,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999608965.5600638,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 10,
+      "opEquipped": 10,
+      "op": "op-automation",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.48,
+      "cashVal": 1.37,
+      "findBonus": 0.25,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 999066015.1921663,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 11,
+      "opEquipped": 11,
+      "op": "op-core-tech",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 61.484076,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.4,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:True",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 12,
+      "op": "op-master",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 400.5656,
+      "stripDps": 54.076356,
+      "scrapVal": 1.58,
+      "partsVal": 1.58,
+      "cashVal": 1.57,
+      "findBonus": 0.35,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:False",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 12,
+      "op": "op-master",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 400.5656,
+      "stripDps": 54.076356,
+      "scrapVal": 1.58,
+      "partsVal": 1.58,
+      "cashVal": 1.57,
+      "findBonus": 0.35,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "buyOp:False",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 12,
+      "op": "op-master",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 400.5656,
+      "stripDps": 54.076356,
+      "scrapVal": 1.58,
+      "partsVal": 1.58,
+      "cashVal": 1.57,
+      "findBonus": 0.35,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "equip:1",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "equip:999",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 12,
+      "op": "op-master",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 400.5656,
+      "stripDps": 54.076356,
+      "scrapVal": 1.58,
+      "partsVal": 1.58,
+      "cashVal": 1.57,
+      "findBonus": 0.35,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "equip:0",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "canRebirth:True",
+      "scrap": 999991662.7820871,
+      "parts": 997654344.2356324,
+      "copper": 999930,
+      "boards": 999895,
+      "cores": 999860,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 0,
+      "cumScrap": 1000000000,
+      "nodes": [
+        {
+          "id": "body-smash",
+          "lv": 20
+        },
+        {
+          "id": "body-strip",
+          "lv": 1
+        },
+        {
+          "id": "body-smash-pct",
+          "lv": 1
+        },
+        {
+          "id": "body-strip-pct",
+          "lv": 1
+        },
+        {
+          "id": "yield-scrap",
+          "lv": 1
+        },
+        {
+          "id": "yield-parts",
+          "lv": 1
+        },
+        {
+          "id": "yield-cash",
+          "lv": 1
+        },
+        {
+          "id": "yield-find",
+          "lv": 1
+        },
+        {
+          "id": "yard-queue",
+          "lv": 1
+        },
+        {
+          "id": "yard-conveyor",
+          "lv": 1
+        },
+        {
+          "id": "yard-autobuy",
+          "lv": 1
+        },
+        {
+          "id": "yard-helper",
+          "lv": 1
+        }
+      ],
+      "smashDps": 290.8216,
+      "stripDps": 39.260916,
+      "scrapVal": 1.08,
+      "partsVal": 1.08,
+      "cashVal": 1.07,
+      "findBonus": 0.1,
+      "helper": true,
+      "autoBuy": true
+    },
+    {
+      "action": "rebirth",
+      "scrap": 0,
+      "parts": 0,
+      "copper": 0,
+      "boards": 0,
+      "cores": 0,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 3,
+      "cumScrap": 0,
+      "nodes": [],
+      "smashDps": 144.039,
+      "stripDps": 57.6156,
+      "scrapVal": 1.75,
+      "partsVal": 1.75,
+      "cashVal": 1.75,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    },
+    {
+      "action": "rebirth-again",
+      "scrap": 0,
+      "parts": 0,
+      "copper": 0,
+      "boards": 0,
+      "cores": 0,
+      "smashTier": 4,
+      "stripTier": 4,
+      "opRank": 12,
+      "opEquipped": 1,
+      "op": "op-apprentice",
+      "maxGrade": 1,
+      "certs": 3,
+      "cumScrap": 0,
+      "nodes": [],
+      "smashDps": 144.039,
+      "stripDps": 57.6156,
+      "scrapVal": 1.75,
+      "partsVal": 1.75,
+      "cashVal": 1.75,
+      "findBonus": 0,
+      "helper": false,
+      "autoBuy": false
+    }
+  ],
   "scenarios": [
     {
       "name": "basic-smash",

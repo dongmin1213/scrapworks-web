@@ -13,6 +13,7 @@
 // 실행: dotnet run --project golden/harness -- <출력경로>
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -42,6 +43,7 @@ static class Program
             ["settlements"] = Settlements(B),
             ["findChances"] = FindChances(B),
             ["progression"] = Progression(B),
+            ["purchases"] = Purchases(B),
             ["scenarios"] = Scenarios(),
         };
 
@@ -209,6 +211,75 @@ static class Program
             certs.Add(new { cumScrap = cum, certs = B.CertsFrom(cum), mult = B.CertMult(B.CertsFrom(cum)) });
 
         return new { nodes, tools, operators = ops, certs };
+    }
+
+    // ── 구매·환생 전이 — **명령열을 그대로 돌린다** ──
+    //
+    // 비용 수식만 대조하면 `buyTool(false)`가 stripTier 대신 smashTier를 올리거나
+    // 특수 자원을 안 깎아도 통과한다. 골든이 그 메서드를 부르지 않기 때문이다
+    // (적대적 리뷰 R7-20). 여기서는 원작 객체에 실제 명령을 순서대로 먹이고
+    // **매 단계의 관측 가능한 상태 전부**를 기록한다.
+    static object Purchases(Balance B)
+    {
+        var steps = new List<object>();
+        var w = new Workshop(null);
+        // 살 수 있게 자원을 채운다 — 구매 판정이 아니라 **전이**를 보는 것이 목적이다
+        w.EarnScrap(1e9);
+        w.EarnParts(1e9);
+        w.EarnSpecial(1e6, 1e6, 1e6);
+        w.EarnCash(1e9);
+
+        void Snap(string action) => steps.Add(new
+        {
+            action,
+            scrap = R(w.Scrap), parts = R(w.Parts),
+            copper = R(w.Copper), boards = R(w.Boards), cores = R(w.Cores),
+            smashTier = w.SmashTier, stripTier = w.StripTier,
+            opRank = w.OpRank, opEquipped = w.OpEquipped, op = w.Op.id,
+            maxGrade = w.D.maxGrade, certs = w.Certs, cumScrap = R(w.D.cumScrap),
+            nodes = w.D.nodeIds.Select((id, i) => new { id, lv = w.D.nodeLevels[i] }).ToList(),
+            smashDps = R(w.SmashDps), stripDps = R(w.StripDps),
+            scrapVal = R(w.ScrapVal), partsVal = R(w.PartsVal), cashVal = R(w.CashVal),
+            findBonus = R(w.FindBonus), helper = w.HelperUnlocked, autoBuy = w.AutoBuyUnlocked,
+        });
+
+        Snap("start");
+
+        // 노드 — 각 노드를 한 번씩 사고, 하나는 만렙까지
+        foreach (var n in B.skill.nodes)
+        {
+            var ok = w.BuyNode(n.id);
+            Snap($"buyNode:{n.id}:{ok}");
+        }
+        var first = B.skill.nodes[0];
+        for (int i = w.NodeLv(first.id); i < first.max + 2; i++)
+        {
+            var ok = w.BuyNode(first.id);
+            Snap($"buyNode:{first.id}:{ok}");   // 만렙을 넘겨 **거부되는지**까지 본다
+        }
+
+        // 공구 — 두 축을 번갈아 (축이 바뀌면 여기서 드러난다)
+        for (int i = 0; i < B.tool.tierCount + 1; i++)
+        {
+            Snap($"buyTool:smash:{w.BuyTool(true)}");
+            Snap($"buyTool:strip:{w.BuyTool(false)}");
+        }
+
+        // 작업자 — 사다리를 끝까지, 그리고 건너뛰기 시도
+        for (int i = 0; i < B.shop.operators.Length + 1; i++)
+            Snap($"buyOp:{w.BuyOp()}");
+        w.Equip(1); Snap("equip:1");
+        w.Equip(999); Snap("equip:999");   // clamp 확인
+        w.Equip(0); Snap("equip:0");
+
+        // 환생 — 무엇이 남고 무엇이 사라지는가
+        Snap($"canRebirth:{w.CanRebirth}");
+        w.DoRebirth();
+        Snap("rebirth");
+        w.DoRebirth();
+        Snap("rebirth-again");   // 인증이 없으면 아무 일도 없어야 한다
+
+        return steps;
     }
 
     // ── 시나리오 — **여기가 진짜 방어선.** ──

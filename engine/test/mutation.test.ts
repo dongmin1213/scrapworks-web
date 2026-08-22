@@ -159,3 +159,78 @@ describe("뮤테이션 — 망가뜨리면 골든이 반드시 실패한다", ()
     expect(matchesGolden(runScenario(mutate)), `이 결함을 골든이 못 잡는다: ${why}`).toBe(false);
   });
 });
+
+/**
+ * 구매 전이 뮤테이션 — **골든이 그 경로를 정말 보고 있는가.**
+ *
+ * 비용 수식만 대조하던 때는 `buyTool(false)`가 엉뚱한 축을 올려도 246건이 통과했다
+ * (적대적 리뷰 R7-20). 구매 명령열 골든을 붙였으니, 그 경로를 망가뜨리면 실패해야 한다.
+ */
+describe("뮤테이션 — 구매 전이를 망가뜨리면 골든이 실패한다", () => {
+  const steps = fixtures.purchases;
+
+  /** 픽스처의 한 단계와 지금 상태가 같은가 — 골든 테스트가 보는 것과 같은 집합. */
+  function matches(w: Workshop, want: (typeof steps)[number]): boolean {
+    const close = (a: number, b: number) => Math.abs(a - b) <= Math.max(Math.abs(b) * 1e-9, 1e-9);
+    return (
+      close(w.parts, want.parts) &&
+      close(w.copper, want.copper) &&
+      w.smashTier === want.smashTier &&
+      w.stripTier === want.stripTier &&
+      w.d.opEquipped === want.opEquipped &&
+      close(w.stripDps, want.stripDps)
+    );
+  }
+
+  /** 공구 구매까지 명령열을 그대로 밟는다 — 뮤테이션은 그 안에서 일어난다. */
+  function runToTools(mutateAxis: boolean): { w: Workshop; ok: boolean } {
+    const w = new Workshop(balance, newGame(balance));
+    w.earnScrap(1e9);
+    w.earnParts(1e9);
+    w.earnSpecial(1e6, 1e6, 1e6);
+    w.earnCash(1e9);
+
+    let i = 1; // start는 건너뛴다
+    for (const n of balance.skill.nodes) {
+      w.buyNode(n.id);
+      i++;
+    }
+    const first = balance.skill.nodes[0];
+    for (let k = w.nodeLv(first.id); k < first.max + 2; k++) {
+      w.buyNode(first.id);
+      i++;
+    }
+
+    let ok = true;
+    for (let k = 0; k < balance.tool.tierCount + 1; k++) {
+      w.buyTool(true);
+      ok = ok && matches(w, steps[i++]);
+      // **뮤테이션**: 뜯기를 사야 하는데 부수기를 산다 (축이 바뀐 흔한 실수)
+      w.buyTool(mutateAxis ? true : false);
+      ok = ok && matches(w, steps[i++]);
+    }
+    return { w, ok };
+  }
+
+  it("기준: 손대지 않으면 골든과 일치한다", () => {
+    expect(runToTools(false).ok).toBe(true);
+  });
+
+  it("공구 축을 바꾸면 골든이 실패한다", () => {
+    expect(runToTools(true).ok, "buyTool의 축이 바뀌었는데 골든이 통과했다").toBe(false);
+  });
+
+  it("환생이 지워야 할 것을 남기면 골든이 실패한다", () => {
+    const last = steps[steps.length - 1];
+    const w = new Workshop(balance, newGame(balance));
+    w.earnScrap(1e9);
+    // **뮤테이션**: 노드를 남긴다 (원작은 환생에서 스킬트리를 비운다)
+    const n = balance.skill.nodes[0];
+    w.buyNode(n.id);
+    w.d.certs = last.certs;
+    // 노드를 지우지 않은 상태 — 골든의 마지막 단계와 다르다
+    expect(
+      w.d.nodeIds.map((id, i2) => ({ id, lv: w.d.nodeLevels[i2] })),
+    ).not.toEqual(last.nodes);
+  });
+});
