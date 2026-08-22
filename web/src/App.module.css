@@ -1,0 +1,316 @@
+/*
+ * 화면 — 위에서 아래로 "돈 → 물건 → 해체 → 돈"의 순환이 한 눈에 보이게.
+ * 390×844 논리 프레임을 가득 채운다 (스케일은 Stage가 담당).
+ */
+.screen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  gap: 10px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ── 자원 ── */
+.resources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.cash {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.cashLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.cashValue {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.subResources {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.res {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+
+.resIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.resLabel {
+  font-size: 9px;
+  color: var(--ink-3);
+}
+
+.resValue {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+/* ── 작업대 — 화면의 주인공. 남는 높이를 전부 가져간다 ── */
+.bench {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.machineWrap {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.machine {
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  /* 컨베이어 도착 전에는 흐리게 — 아직 손대지 못한다는 신호 */
+  transition: opacity 200ms;
+}
+
+.machineMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.machineName {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.condition {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.hpTrack {
+  width: 100%;
+  height: 10px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.hpFill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 80ms linear;
+}
+
+.eta {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+
+.idle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-3);
+  text-align: center;
+}
+
+/* ── 축 전환 — 이 게임의 코어 판단이므로 가장 누르기 쉬운 크기로 ── */
+.axis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.axisButton {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  transition: background 120ms, border-color 120ms;
+}
+
+.axisButton[data-active] {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.axisName {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.axisButton[data-active] .axisName {
+  color: var(--accent);
+}
+
+.axisHint {
+  font-size: 10px;
+  color: var(--ink-3);
+  line-height: 1.35;
+}
+
+/* ── 대기열 — 칸이 차면 매입이 막힌다(압박의 출처) ── */
+.queue {
+  display: flex;
+  gap: 6px;
+}
+
+.slot {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 48px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.slot[data-filled] {
+  border-style: solid;
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.slotIcon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.slotGrade {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.slotEmpty {
+  font-size: 18px;
+  color: var(--border-strong);
+}
+
+/* ── 매입 ── */
+.buy {
+  display: flex;
+  gap: 6px;
+}
+
+.buyButton {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 6px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.buyButton:disabled {
+  background: var(--surface-2);
+  color: var(--ink-3);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.buyName {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.buyPrice {
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 발견물 — 이 게임에서 가장 기억에 남아야 하는 순간 ── */
+.find {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px;
+  background: var(--rust);
+  color: var(--ink);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  animation: findIn 220ms ease-out;
+}
+
+@keyframes findIn {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+
+.findTitle {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+}
+
+.findName {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.findCash {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}

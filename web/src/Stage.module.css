@@ -1,0 +1,26 @@
+/*
+ * 스테이지 바깥 — 남는 공간. 게임 배경색으로 채워 레터박스가 "검은 띠"로 보이지 않게 한다.
+ * 스케일이 하한(MIN_SCALE)에 걸릴 만큼 화면이 작으면 그때는 잘라내는 대신 스크롤을 허용한다.
+ */
+.viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100dvh;
+  overflow: auto;
+  background: var(--bg-deep);
+  /* 노치·홈 인디케이터를 피한다 */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+/*
+ * 390×844 논리 프레임. 크기는 인라인 스타일이 정하고(디자인 상수와 한 곳에서만 정의),
+ * 여기서는 스케일의 기준점만 다룬다.
+ */
+.stage {
+  position: relative;
+  flex: none;
+  transform-origin: center center;
+}

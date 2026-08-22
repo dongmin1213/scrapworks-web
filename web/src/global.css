@@ -1,0 +1,80 @@
+/*
+ * 전역 — 폐기계 해체장의 톤. 기름때 낀 금속·녹·경고 노랑.
+ * 값은 전부 토큰으로 두고 컴포넌트에서 raw hex를 쓰지 않는다 (플랫폼 규약과 같은 원칙).
+ */
+:root {
+  /* 바탕 — 어두운 작업장 */
+  --bg-deep: #0d0b0a;
+  --bg: #12100e;
+  --surface: #1b1815;
+  --surface-2: #241f1b;
+  --border: #352e28;
+  --border-strong: #4a4038;
+
+  /* 글자 */
+  --ink: #f0ebe4;
+  --ink-2: #b3a99d;
+  --ink-3: #8a7f74;
+
+  /* 강조 — 경고 노랑(현금·주 액션)과 녹슨 주황(뜯기) */
+  --accent: #f0b429;
+  --accent-ink: #1a1200;
+  --rust: #c86a2c;
+  --steel: #6f8fa6;
+
+  /* 상태 */
+  --danger: #d3452f;
+  --ok: #6aa84f;
+
+  --radius: 2px;
+  --shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--ink);
+  font-family:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+  /* 모바일에서 길게 눌러 텍스트가 선택되면 조작감이 깨진다 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

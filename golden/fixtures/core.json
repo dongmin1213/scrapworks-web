@@ -1,0 +1,743 @@
+{
+  "source": "scrapworks \uC6D0\uBCF8 \uC218\uC2DD \u002B .NET System.Random (golden/csharp/DumpFixtures.csx)",
+  "formulas": [
+    {
+      "grade": 1,
+      "buyPrice": 25,
+      "durability": 90,
+      "yieldTotal": 40,
+      "copper": 2,
+      "boards": 1,
+      "cores": 1
+    },
+    {
+      "grade": 2,
+      "buyPrice": 42,
+      "durability": 106.19999999999999,
+      "yieldTotal": 63.2,
+      "copper": 2.5,
+      "boards": 1.25,
+      "cores": 1.25
+    },
+    {
+      "grade": 3,
+      "buyPrice": 70.55999999999999,
+      "durability": 125.31599999999999,
+      "yieldTotal": 99.85600000000002,
+      "copper": 3.125,
+      "boards": 1.5625,
+      "cores": 1.5625
+    },
+    {
+      "grade": 5,
+      "buyPrice": 199.14854399999996,
+      "durability": 174.48999839999996,
+      "yieldTotal": 249.28051840000006,
+      "copper": 4.8828125,
+      "boards": 2.44140625,
+      "cores": 2.44140625
+    },
+    {
+      "grade": 10,
+      "buyPrice": 2665.1615811958986,
+      "durability": 399.19084732361944,
+      "yieldTotal": 2454.560685724024,
+      "copper": 14.901161193847656,
+      "boards": 7.450580596923828,
+      "cores": 7.450580596923828
+    },
+    {
+      "grade": 20,
+      "buyPrice": 477327.39626091224,
+      "durability": 2089.299249473334,
+      "yieldTotal": 237982.2923161287,
+      "copper": 138.77787807814457,
+      "boards": 69.38893903907228,
+      "cores": 69.38893903907228
+    },
+    {
+      "grade": 40,
+      "buyPrice": 15310944984.466118,
+      "durability": 57232.24663936452,
+      "yieldTotal": 2237105072.513553,
+      "copper": 12037.062152420223,
+      "boards": 6018.531076210112,
+      "cores": 6018.531076210112
+    },
+    {
+      "grade": 60,
+      "buyPrice": 491120011450608,
+      "durability": 1567764.912668561,
+      "yieldTotal": 21029460035698.18,
+      "copper": 1044048.7148797639,
+      "boards": 522024.35743988195,
+      "cores": 522024.35743988195
+    }
+  ],
+  "rngCases": [
+    {
+      "seed": 1,
+      "doubles": [
+        0.24866858415709278,
+        0.11074397718102856,
+        0.46701067987224587,
+        0.7716041220219825,
+        0.657518893786482,
+        0.43278260130099144,
+        0.3540837636003661,
+        0.9438622761256351,
+        0.10126645355544353,
+        0.6424555553321054
+      ],
+      "ints": [
+        2,
+        24,
+        32,
+        98,
+        68,
+        65,
+        28,
+        61,
+        70,
+        70
+      ]
+    },
+    {
+      "seed": 7,
+      "doubles": [
+        0.38322046929189024,
+        0.8712556827213874,
+        0.6609386227377405,
+        0.052261705534654534,
+        0.36643333237917786,
+        0.6761694413964494,
+        0.042423949131008214,
+        0.9539686930151511,
+        0.843566656039826,
+        0.8549621411855156
+      ],
+      "ints": [
+        44,
+        93,
+        44,
+        11,
+        88,
+        40,
+        80,
+        33,
+        86,
+        2
+      ]
+    },
+    {
+      "seed": 42,
+      "doubles": [
+        0.6681064659115423,
+        0.14090729837348093,
+        0.12551828945312568,
+        0.5227642760252413,
+        0.16843422416990353,
+        0.26259267528662117,
+        0.7244083647264207,
+        0.5129227915373271,
+        0.17365117053205667,
+        0.7612505586637419
+      ],
+      "ints": [
+        23,
+        25,
+        50,
+        32,
+        38,
+        26,
+        51,
+        3,
+        81,
+        57
+      ]
+    },
+    {
+      "seed": 12345,
+      "doubles": [
+        0.06674693481379511,
+        0.07015950887937075,
+        0.7747651351498278,
+        0.5111392687592372,
+        0.7974905584927139,
+        0.827308291023275,
+        0.16595879530811627,
+        0.7361306234896792,
+        0.26021636475818993,
+        0.5060048510814108
+      ],
+      "ints": [
+        23,
+        38,
+        21,
+        2,
+        13,
+        74,
+        19,
+        88,
+        86,
+        35
+      ]
+    },
+    {
+      "seed": 999983,
+      "doubles": [
+        0.1592020616676668,
+        0.44679892037380436,
+        0.8757044337111081,
+        0.8602168168221679,
+        0.2705410273142816,
+        0.5093046573499705,
+        0.9866516473640928,
+        0.3163579447736768,
+        0.5747799098374229,
+        0.10257803280957883
+      ],
+      "ints": [
+        29,
+        64,
+        0,
+        89,
+        94,
+        30,
+        78,
+        78,
+        60,
+        61
+      ]
+    }
+  ],
+  "conditionRolls": [
+    {
+      "seed": 1,
+      "rolled": [
+        "cond-normal",
+        "cond-normal",
+        "cond-flood",
+        "cond-mint",
+        "cond-burnt",
+        "cond-normal",
+        "cond-normal",
+        "cond-sealed",
+        "cond-normal",
+        "cond-burnt",
+        "cond-normal",
+        "cond-normal",
+        "cond-normal",
+        "cond-sealed",
+        "cond-burnt",
+        "cond-burnt",
+        "cond-normal",
+        "cond-flood",
+        "cond-burnt",
+        "cond-burnt"
+      ]
+    },
+    {
+      "seed": 7,
+      "rolled": [
+        "cond-normal",
+        "cond-mint",
+        "cond-burnt",
+        "cond-normal",
+        "cond-normal",
+        "cond-burnt",
+        "cond-normal",
+        "cond-sealed",
+        "cond-mint",
+        "cond-mint",
+        "cond-normal",
+        "cond-sealed",
+        "cond-normal",
+        "cond-normal",
+        "cond-sealed",
+        "cond-normal",
+        "cond-mint",
+        "cond-normal",
+        "cond-mint",
+        "cond-normal"
+      ]
+    },
+    {
+      "seed": 42,
+      "rolled": [
+        "cond-burnt",
+        "cond-normal",
+        "cond-normal",
+        "cond-flood",
+        "cond-normal",
+        "cond-normal",
+        "cond-burnt",
+        "cond-flood",
+        "cond-normal",
+        "cond-mint",
+        "cond-normal",
+        "cond-normal",
+        "cond-flood",
+        "cond-normal",
+        "cond-normal",
+        "cond-normal",
+        "cond-flood",
+        "cond-normal",
+        "cond-mint",
+        "cond-flood"
+      ]
+    },
+    {
+      "seed": 12345,
+      "rolled": [
+        "cond-normal",
+        "cond-normal",
+        "cond-mint",
+        "cond-flood",
+        "cond-mint",
+        "cond-mint",
+        "cond-normal",
+        "cond-burnt",
+        "cond-normal",
+        "cond-flood",
+        "cond-normal",
+        "cond-normal",
+        "cond-normal",
+        "cond-normal",
+        "cond-normal",
+        "cond-mint",
+        "cond-normal",
+        "cond-sealed",
+        "cond-mint",
+        "cond-normal"
+      ]
+    }
+  ],
+  "settlements": [
+    {
+      "grade": 1,
+      "condition": "cond-normal",
+      "stripFrac": 0,
+      "scrapVal": 29.700000000000003,
+      "partsVal": 2.6999999999999997
+    },
+    {
+      "grade": 1,
+      "condition": "cond-normal",
+      "stripFrac": 0.5,
+      "scrapVal": 19.8,
+      "partsVal": 9
+    },
+    {
+      "grade": 1,
+      "condition": "cond-normal",
+      "stripFrac": 1,
+      "scrapVal": 9.899999999999999,
+      "partsVal": 15.299999999999999
+    },
+    {
+      "grade": 1,
+      "condition": "cond-flood",
+      "stripFrac": 0,
+      "scrapVal": 29.700000000000003,
+      "partsVal": 0.9449999999999998
+    },
+    {
+      "grade": 1,
+      "condition": "cond-flood",
+      "stripFrac": 0.5,
+      "scrapVal": 19.8,
+      "partsVal": 3.15
+    },
+    {
+      "grade": 1,
+      "condition": "cond-flood",
+      "stripFrac": 1,
+      "scrapVal": 9.899999999999999,
+      "partsVal": 5.3549999999999995
+    },
+    {
+      "grade": 1,
+      "condition": "cond-burnt",
+      "stripFrac": 0,
+      "scrapVal": 26.730000000000004,
+      "partsVal": 0.5399999999999999
+    },
+    {
+      "grade": 1,
+      "condition": "cond-burnt",
+      "stripFrac": 0.5,
+      "scrapVal": 17.82,
+      "partsVal": 1.8
+    },
+    {
+      "grade": 1,
+      "condition": "cond-burnt",
+      "stripFrac": 1,
+      "scrapVal": 8.909999999999998,
+      "partsVal": 3.06
+    },
+    {
+      "grade": 1,
+      "condition": "cond-mint",
+      "stripFrac": 0,
+      "scrapVal": 32.67000000000001,
+      "partsVal": 4.05
+    },
+    {
+      "grade": 1,
+      "condition": "cond-mint",
+      "stripFrac": 0.5,
+      "scrapVal": 21.78,
+      "partsVal": 13.5
+    },
+    {
+      "grade": 1,
+      "condition": "cond-mint",
+      "stripFrac": 1,
+      "scrapVal": 10.889999999999999,
+      "partsVal": 22.95
+    },
+    {
+      "grade": 1,
+      "condition": "cond-sealed",
+      "stripFrac": 0,
+      "scrapVal": 29.700000000000003,
+      "partsVal": 2.6999999999999997
+    },
+    {
+      "grade": 1,
+      "condition": "cond-sealed",
+      "stripFrac": 0.5,
+      "scrapVal": 19.8,
+      "partsVal": 9
+    },
+    {
+      "grade": 1,
+      "condition": "cond-sealed",
+      "stripFrac": 1,
+      "scrapVal": 9.899999999999999,
+      "partsVal": 15.299999999999999
+    },
+    {
+      "grade": 3,
+      "condition": "cond-normal",
+      "stripFrac": 0,
+      "scrapVal": 74.14308000000003,
+      "partsVal": 6.740280000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-normal",
+      "stripFrac": 0.5,
+      "scrapVal": 49.42872000000001,
+      "partsVal": 22.467600000000004
+    },
+    {
+      "grade": 3,
+      "condition": "cond-normal",
+      "stripFrac": 1,
+      "scrapVal": 24.714360000000003,
+      "partsVal": 38.19492
+    },
+    {
+      "grade": 3,
+      "condition": "cond-flood",
+      "stripFrac": 0,
+      "scrapVal": 74.14308000000003,
+      "partsVal": 2.3590980000000004
+    },
+    {
+      "grade": 3,
+      "condition": "cond-flood",
+      "stripFrac": 0.5,
+      "scrapVal": 49.42872000000001,
+      "partsVal": 7.863660000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-flood",
+      "stripFrac": 1,
+      "scrapVal": 24.714360000000003,
+      "partsVal": 13.368222000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-burnt",
+      "stripFrac": 0,
+      "scrapVal": 66.72877200000002,
+      "partsVal": 1.3480560000000004
+    },
+    {
+      "grade": 3,
+      "condition": "cond-burnt",
+      "stripFrac": 0.5,
+      "scrapVal": 44.48584800000001,
+      "partsVal": 4.493520000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-burnt",
+      "stripFrac": 1,
+      "scrapVal": 22.242924000000002,
+      "partsVal": 7.638984000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-mint",
+      "stripFrac": 0,
+      "scrapVal": 81.55738800000003,
+      "partsVal": 10.110420000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-mint",
+      "stripFrac": 0.5,
+      "scrapVal": 54.37159200000002,
+      "partsVal": 33.70140000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-mint",
+      "stripFrac": 1,
+      "scrapVal": 27.185796000000007,
+      "partsVal": 57.29238000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-sealed",
+      "stripFrac": 0,
+      "scrapVal": 74.14308000000003,
+      "partsVal": 6.740280000000001
+    },
+    {
+      "grade": 3,
+      "condition": "cond-sealed",
+      "stripFrac": 0.5,
+      "scrapVal": 49.42872000000001,
+      "partsVal": 22.467600000000004
+    },
+    {
+      "grade": 3,
+      "condition": "cond-sealed",
+      "stripFrac": 1,
+      "scrapVal": 24.714360000000003,
+      "partsVal": 38.19492
+    },
+    {
+      "grade": 8,
+      "condition": "cond-normal",
+      "stripFrac": 0,
+      "scrapVal": 730.0558040178208,
+      "partsVal": 66.36870945616552
+    },
+    {
+      "grade": 8,
+      "condition": "cond-normal",
+      "stripFrac": 0.5,
+      "scrapVal": 486.70386934521383,
+      "partsVal": 221.22903152055176
+    },
+    {
+      "grade": 8,
+      "condition": "cond-normal",
+      "stripFrac": 1,
+      "scrapVal": 243.3519346726069,
+      "partsVal": 376.08935358493795
+    },
+    {
+      "grade": 8,
+      "condition": "cond-flood",
+      "stripFrac": 0,
+      "scrapVal": 730.0558040178208,
+      "partsVal": 23.22904830965793
+    },
+    {
+      "grade": 8,
+      "condition": "cond-flood",
+      "stripFrac": 0.5,
+      "scrapVal": 486.70386934521383,
+      "partsVal": 77.43016103219311
+    },
+    {
+      "grade": 8,
+      "condition": "cond-flood",
+      "stripFrac": 1,
+      "scrapVal": 243.3519346726069,
+      "partsVal": 131.63127375472828
+    },
+    {
+      "grade": 8,
+      "condition": "cond-burnt",
+      "stripFrac": 0,
+      "scrapVal": 657.0502236160388,
+      "partsVal": 13.273741891233104
+    },
+    {
+      "grade": 8,
+      "condition": "cond-burnt",
+      "stripFrac": 0.5,
+      "scrapVal": 438.03348241069244,
+      "partsVal": 44.24580630411035
+    },
+    {
+      "grade": 8,
+      "condition": "cond-burnt",
+      "stripFrac": 1,
+      "scrapVal": 219.0167412053462,
+      "partsVal": 75.21787071698759
+    },
+    {
+      "grade": 8,
+      "condition": "cond-mint",
+      "stripFrac": 0,
+      "scrapVal": 803.061384419603,
+      "partsVal": 99.55306418424829
+    },
+    {
+      "grade": 8,
+      "condition": "cond-mint",
+      "stripFrac": 0.5,
+      "scrapVal": 535.3742562797353,
+      "partsVal": 331.84354728082764
+    },
+    {
+      "grade": 8,
+      "condition": "cond-mint",
+      "stripFrac": 1,
+      "scrapVal": 267.6871281398676,
+      "partsVal": 564.1340303774069
+    },
+    {
+      "grade": 8,
+      "condition": "cond-sealed",
+      "stripFrac": 0,
+      "scrapVal": 730.0558040178208,
+      "partsVal": 66.36870945616552
+    },
+    {
+      "grade": 8,
+      "condition": "cond-sealed",
+      "stripFrac": 0.5,
+      "scrapVal": 486.70386934521383,
+      "partsVal": 221.22903152055176
+    },
+    {
+      "grade": 8,
+      "condition": "cond-sealed",
+      "stripFrac": 1,
+      "scrapVal": 243.3519346726069,
+      "partsVal": 376.08935358493795
+    }
+  ],
+  "findChances": [
+    {
+      "grade": 1,
+      "condition": "cond-normal",
+      "stripFrac": 0,
+      "chance": 0.006
+    },
+    {
+      "grade": 1,
+      "condition": "cond-normal",
+      "stripFrac": 0.5,
+      "chance": 0.033
+    },
+    {
+      "grade": 1,
+      "condition": "cond-normal",
+      "stripFrac": 1,
+      "chance": 0.06
+    },
+    {
+      "grade": 1,
+      "condition": "cond-mint",
+      "stripFrac": 0,
+      "chance": 0.0108
+    },
+    {
+      "grade": 1,
+      "condition": "cond-mint",
+      "stripFrac": 0.5,
+      "chance": 0.0594
+    },
+    {
+      "grade": 1,
+      "condition": "cond-mint",
+      "stripFrac": 1,
+      "chance": 0.108
+    },
+    {
+      "grade": 5,
+      "condition": "cond-normal",
+      "stripFrac": 0,
+      "chance": 0.012
+    },
+    {
+      "grade": 5,
+      "condition": "cond-normal",
+      "stripFrac": 0.5,
+      "chance": 0.066
+    },
+    {
+      "grade": 5,
+      "condition": "cond-normal",
+      "stripFrac": 1,
+      "chance": 0.12
+    },
+    {
+      "grade": 5,
+      "condition": "cond-mint",
+      "stripFrac": 0,
+      "chance": 0.0216
+    },
+    {
+      "grade": 5,
+      "condition": "cond-mint",
+      "stripFrac": 0.5,
+      "chance": 0.1188
+    },
+    {
+      "grade": 5,
+      "condition": "cond-mint",
+      "stripFrac": 1,
+      "chance": 0.216
+    },
+    {
+      "grade": 15,
+      "condition": "cond-normal",
+      "stripFrac": 0,
+      "chance": 0.027000000000000003
+    },
+    {
+      "grade": 15,
+      "condition": "cond-normal",
+      "stripFrac": 0.5,
+      "chance": 0.14850000000000002
+    },
+    {
+      "grade": 15,
+      "condition": "cond-normal",
+      "stripFrac": 1,
+      "chance": 0.27
+    },
+    {
+      "grade": 15,
+      "condition": "cond-mint",
+      "stripFrac": 0,
+      "chance": 0.048600000000000004
+    },
+    {
+      "grade": 15,
+      "condition": "cond-mint",
+      "stripFrac": 0.5,
+      "chance": 0.26730000000000004
+    },
+    {
+      "grade": 15,
+      "condition": "cond-mint",
+      "stripFrac": 1,
+      "chance": 0.48600000000000004
+    }
+  ]
+}

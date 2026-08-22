@@ -1,0 +1,437 @@
+{
+  "line": {
+    "queueSlots": 3,
+    "conveyorSeconds": 1.6,
+    "settleSeconds": 0.6,
+    "saveIntervalSec": 20
+  },
+  "machine": {
+    "gradeCap": 60,
+    "buyBase": 25,
+    "buyGrowth": 1.68,
+    "durBase": 90,
+    "durGrowth": 1.18,
+    "yieldBase": 40,
+    "yieldGrowth": 1.58,
+    "partsShare": 0.45,
+    "unlockMargin": 12.0
+  },
+  "tool": {
+    "smashDps": 12,
+    "stripDps": 4.8,
+    "tierMult": 1.9,
+    "tierCount": 4,
+    "costBase": 560,
+    "costGrowth": 3.2,
+    "smashSpecial": [
+      {
+        "copper": 0,
+        "boards": 0,
+        "cores": 0
+      },
+      {
+        "copper": 40,
+        "boards": 0,
+        "cores": 0
+      },
+      {
+        "copper": 0,
+        "boards": 60,
+        "cores": 0
+      },
+      {
+        "copper": 0,
+        "boards": 0,
+        "cores": 80
+      }
+    ],
+    "stripSpecial": [
+      {
+        "copper": 0,
+        "boards": 0,
+        "cores": 0
+      },
+      {
+        "copper": 30,
+        "boards": 0,
+        "cores": 0
+      },
+      {
+        "copper": 0,
+        "boards": 45,
+        "cores": 0
+      },
+      {
+        "copper": 0,
+        "boards": 0,
+        "cores": 60
+      }
+    ]
+  },
+  "axis": {
+    "smashScrapMult": 1.35,
+    "smashPartsMult": 0.15,
+    "stripScrapMult": 0.45,
+    "stripPartsMult": 0.85,
+    "smashFindMult": 0.1,
+    "stripFindMult": 1.0
+  },
+  "special": {
+    "copperBase": 2,
+    "boardsBase": 1,
+    "coresBase": 1,
+    "qtyGrowth": 1.25
+  },
+  "find": {
+    "baseChance": 0.06,
+    "gradeBonus": 0.015,
+    "items": [
+      {
+        "id": "find-cash",
+        "minGrade": 1,
+        "weight": 30,
+        "cashMult": 0.6,
+        "passive": "cashPct",
+        "value": 0.02
+      },
+      {
+        "id": "find-console",
+        "minGrade": 1,
+        "weight": 20,
+        "cashMult": 1.0,
+        "passive": "findPct",
+        "value": 0.03
+      },
+      {
+        "id": "find-parts",
+        "minGrade": 2,
+        "weight": 25,
+        "cashMult": 0.8,
+        "passive": "partsPct",
+        "value": 0.03
+      },
+      {
+        "id": "find-letter",
+        "minGrade": 2,
+        "weight": 15,
+        "cashMult": 0.4,
+        "passive": "scrapPct",
+        "value": 0.03
+      },
+      {
+        "id": "find-coinbox",
+        "minGrade": 2,
+        "weight": 20,
+        "cashMult": 1.3,
+        "passive": "cashPct",
+        "value": 0.03
+      },
+      {
+        "id": "find-toolbox",
+        "minGrade": 3,
+        "weight": 18,
+        "cashMult": 1.1,
+        "passive": "smashPct",
+        "value": 0.03
+      },
+      {
+        "id": "find-keys",
+        "minGrade": 3,
+        "weight": 12,
+        "cashMult": 1.6,
+        "passive": "stripPct",
+        "value": 0.03
+      }
+    ]
+  },
+  "conditions": [
+    {
+      "id": "cond-normal",
+      "weight": 46,
+      "priceMult": 1.0,
+      "scrapMult": 1.0,
+      "partsMult": 1.0,
+      "findMult": 1.0,
+      "durMult": 1.0,
+      "hidden": false
+    },
+    {
+      "id": "cond-flood",
+      "weight": 16,
+      "priceMult": 0.65,
+      "scrapMult": 1.0,
+      "partsMult": 0.35,
+      "findMult": 0.6,
+      "durMult": 0.9,
+      "hidden": false
+    },
+    {
+      "id": "cond-burnt",
+      "weight": 12,
+      "priceMult": 0.45,
+      "scrapMult": 0.9,
+      "partsMult": 0.2,
+      "findMult": 0.3,
+      "durMult": 0.8,
+      "hidden": false
+    },
+    {
+      "id": "cond-mint",
+      "weight": 14,
+      "priceMult": 1.5,
+      "scrapMult": 1.1,
+      "partsMult": 1.5,
+      "findMult": 1.8,
+      "durMult": 1.1,
+      "hidden": false
+    },
+    {
+      "id": "cond-sealed",
+      "weight": 12,
+      "priceMult": 1.35,
+      "scrapMult": 1.0,
+      "partsMult": 1.0,
+      "findMult": 1.0,
+      "durMult": 1.0,
+      "hidden": true
+    }
+  ],
+  "skill": {
+    "costGrowth": 1.15,
+    "nodes": [
+      {
+        "id": "body-smash",
+        "stat": "smashFlat",
+        "per": 1.4,
+        "max": 20,
+        "baseCost": 5
+      },
+      {
+        "id": "body-strip",
+        "stat": "stripFlat",
+        "per": 0.6,
+        "max": 20,
+        "baseCost": 5
+      },
+      {
+        "id": "body-smash-pct",
+        "stat": "smashPct",
+        "per": 0.06,
+        "max": 15,
+        "baseCost": 200
+      },
+      {
+        "id": "body-strip-pct",
+        "stat": "stripPct",
+        "per": 0.06,
+        "max": 15,
+        "baseCost": 200
+      },
+      {
+        "id": "yield-scrap",
+        "stat": "scrapPct",
+        "per": 0.08,
+        "max": 15,
+        "baseCost": 140
+      },
+      {
+        "id": "yield-parts",
+        "stat": "partsPct",
+        "per": 0.08,
+        "max": 15,
+        "baseCost": 320
+      },
+      {
+        "id": "yield-cash",
+        "stat": "cashPct",
+        "per": 0.07,
+        "max": 15,
+        "baseCost": 260
+      },
+      {
+        "id": "yield-find",
+        "stat": "findPct",
+        "per": 0.1,
+        "max": 12,
+        "baseCost": 420
+      },
+      {
+        "id": "yard-queue",
+        "stat": "queueAdd",
+        "per": 1.0,
+        "max": 5,
+        "baseCost": 600
+      },
+      {
+        "id": "yard-conveyor",
+        "stat": "conveyorPct",
+        "per": 0.12,
+        "max": 10,
+        "baseCost": 180
+      },
+      {
+        "id": "yard-autobuy",
+        "stat": "autoBuy",
+        "per": 1.0,
+        "max": 1,
+        "baseCost": 1500
+      },
+      {
+        "id": "yard-helper",
+        "stat": "helper",
+        "per": 1.0,
+        "max": 1,
+        "baseCost": 4000
+      }
+    ]
+  },
+  "shop": {
+    "operatorCostBase": 100,
+    "operatorCostGrowth": 2.6,
+    "operators": [
+      {
+        "id": "op-apprentice",
+        "smashPct": 0,
+        "stripPct": 0,
+        "scrapValPct": 0,
+        "partsValPct": 0,
+        "cashValPct": 0,
+        "allValPct": 0,
+        "findPct": 0
+      },
+      {
+        "id": "op-mechanic",
+        "smashPct": 0,
+        "stripPct": 0.2,
+        "scrapValPct": 0,
+        "partsValPct": 0.3,
+        "cashValPct": 0,
+        "allValPct": 0,
+        "findPct": 0
+      },
+      {
+        "id": "op-breaker",
+        "smashPct": 0.25,
+        "stripPct": 0,
+        "scrapValPct": 0.3,
+        "partsValPct": 0,
+        "cashValPct": 0,
+        "allValPct": 0,
+        "findPct": 0
+      },
+      {
+        "id": "op-welder",
+        "smashPct": 0.35,
+        "stripPct": 0,
+        "scrapValPct": 0.2,
+        "partsValPct": 0,
+        "cashValPct": 0.15,
+        "allValPct": 0,
+        "findPct": 0
+      },
+      {
+        "id": "op-electrician",
+        "smashPct": 0,
+        "stripPct": 0.4,
+        "scrapValPct": 0,
+        "partsValPct": 0.25,
+        "cashValPct": 0,
+        "allValPct": 0,
+        "findPct": 0.1
+      },
+      {
+        "id": "op-heavy",
+        "smashPct": 0.6,
+        "stripPct": 0,
+        "scrapValPct": 0.25,
+        "partsValPct": 0,
+        "cashValPct": 0.2,
+        "allValPct": 0,
+        "findPct": 0
+      },
+      {
+        "id": "op-surveyor",
+        "smashPct": 0,
+        "stripPct": 0.25,
+        "scrapValPct": 0,
+        "partsValPct": 0.5,
+        "cashValPct": 0,
+        "allValPct": 0,
+        "findPct": 0.2
+      },
+      {
+        "id": "op-supervisor",
+        "smashPct": 0,
+        "stripPct": 0,
+        "scrapValPct": 0,
+        "partsValPct": 0,
+        "cashValPct": 0,
+        "allValPct": 0.4,
+        "findPct": 0
+      },
+      {
+        "id": "op-exosuit",
+        "smashPct": 0.5,
+        "stripPct": 0.5,
+        "scrapValPct": 0,
+        "partsValPct": 0,
+        "cashValPct": 0,
+        "allValPct": 0.2,
+        "findPct": 0
+      },
+      {
+        "id": "op-automation",
+        "smashPct": 0,
+        "stripPct": 0,
+        "scrapValPct": 0,
+        "partsValPct": 0.4,
+        "cashValPct": 0.3,
+        "allValPct": 0,
+        "findPct": 0.15
+      },
+      {
+        "id": "op-core-tech",
+        "smashPct": 0,
+        "stripPct": 0.6,
+        "scrapValPct": 0,
+        "partsValPct": 0,
+        "cashValPct": 0,
+        "allValPct": 0,
+        "findPct": 0.3
+      },
+      {
+        "id": "op-master",
+        "smashPct": 0.4,
+        "stripPct": 0.4,
+        "scrapValPct": 0,
+        "partsValPct": 0,
+        "cashValPct": 0,
+        "allValPct": 0.5,
+        "findPct": 0.25
+      }
+    ]
+  },
+  "cert": {
+    "scrapDivisor": 80000000,
+    "multPerCert": 0.25
+  },
+  "night": {
+    "capHours": 8,
+    "rateOfActive": 0.35
+  },
+  "start": {
+    "cash": 60,
+    "scrap": 0,
+    "parts": 0,
+    "smashTier": 1,
+    "stripTier": 1,
+    "maxGrade": 1
+  },
+  "feel": {
+    "dropGravity": 4200,
+    "dropScatterX": 420,
+    "dropUpVel": 1300,
+    "dropsPerMachine": 26,
+    "hitInterval": 0.35
+  }
+}

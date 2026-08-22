@@ -1,0 +1,8 @@
+packages:
+  - engine
+  - web
+
+# esbuild는 설치 시 네이티브 바이너리를 받는 빌드 스크립트가 필요하다.
+# pnpm 10부터 기본 차단이라 명시적으로 허용한다 (소울던전 레포와 같은 형식).
+allowBuilds:
+  esbuild: true
