@@ -16,6 +16,21 @@ import type { Workshop } from "./workshop";
 
 export type Axis = "smash" | "strip";
 
+/**
+ * float32로 내린다 — **원작에서 컨베이어·정산 텀은 `float`이다.**
+ *
+ * TS의 number는 배정밀도라 그대로 누적하면 원작과 조금씩 갈라지고, 컨베이어가
+ * 1.0에 닿는 프레임이 한 칸 어긋난다. 그 한 칸이 매입 타이밍을 바꾸고, 매입 타이밍이
+ * 난수 소비를 바꾸고, 결국 세션 전체가 달라진다.
+ * (시나리오 골든이 t=1초에서 1e-7 차이로 이걸 잡아냈다.)
+ *
+ * 체력·데미지·재화는 원작에서도 `double`이므로 여기를 통과시키지 않는다.
+ */
+const f32 = Math.fround;
+
+/** 매대에 걸리는 등급 수 — 원작 `BuyUI`가 1~6을 만든다. */
+const OFFER_ROWS = 6;
+
 export interface Item {
   grade: number;
   conditionId: string;
@@ -38,7 +53,28 @@ export interface YardEvents {
   onBuy?: () => void;
 }
 
+/**
+ * 매대 한 줄 — **등급마다 매물이 하나씩 걸려 있다.**
+ * 상태는 화면이 열릴 때 굴려 고정되고, **사려고 눌러 성공했을 때만** 새 매물이 걸린다.
+ */
+export interface BuyOffer {
+  grade: number;
+  conditionId: string;
+}
+
 export class YardLine {
+  /**
+   * 매대 재고 — 원작 `BuyUI.BuildRow`가 화면 생성 시 등급 1~6의 상태를 **여섯 번 굴려**
+   * 각 행에 고정하고, 구매 성공 시에만 그 행을 다시 굴린다(`OnBuy`).
+   *
+   * 처음엔 이걸 화면 쪽에 두지 않고 **누를 때마다 굴렸다.** 그러면 세 가지가 어긋난다:
+   *  - 표시 가격이 항상 기본가라 실제 결제액(상태 배수)과 다르다 — 눌렀는데 조용히 실패한다
+   *  - 잔액·대기열 부족으로 실패해도 **난수를 이미 써 버린다**
+   *  - 그 뒤의 발견물 난수까지 전부 한 칸씩 밀린다
+   * 재고는 규칙이지 화면 장식이 아니므로 엔진이 소유한다.
+   */
+  readonly offers: BuyOffer[] = [];
+
   /** [0]이 작업 중인 물건 */
   readonly queue: Item[] = [];
   mode: Axis = "smash";
@@ -54,7 +90,12 @@ export class YardLine {
     private readonly workshop: Workshop,
     private readonly rng: Rng,
     private readonly events: YardEvents = {},
-  ) {}
+  ) {
+    // 원작 BuildRow와 **같은 순서로** 등급 1~6을 굴린다 — 순서가 곧 난수 수열이다
+    for (let g = 1; g <= OFFER_ROWS; g++) {
+      this.offers.push({ grade: g, conditionId: this.rollCondition() });
+    }
+  }
 
   get current(): Item | null {
     return this.queue.length > 0 ? this.queue[0] : null;
@@ -107,6 +148,18 @@ export class YardLine {
     );
   }
 
+  /**
+   * 매대에서 산다 — 원작 `BuyUI.OnBuy`. **성공했을 때만** 그 행에 새 매물을 굴린다.
+   * 화면은 이 메서드만 부르면 되고 상태를 스스로 굴리지 않는다.
+   */
+  buyOffer(grade: number): boolean {
+    const offer = this.offers.find((o) => o.grade === grade);
+    if (!offer) return false;
+    if (!this.buy(offer.grade, offer.conditionId)) return false;
+    offer.conditionId = this.rollCondition(); // 산 매물은 나가고 새 매물이 걸린다
+    return true;
+  }
+
   /** 매입 — 대기열에 넣는다. 칸이 없으면 실패 (손실 없음, 기회비용만). */
   buy(grade: number, conditionId: string): boolean {
     if (!this.canBuy(grade, conditionId)) return false;
@@ -145,19 +198,20 @@ export class YardLine {
     if (this.queue.length === 0) return;
 
     if (this.settleT > 0) {
-      this.settleT -= dt;
+      this.settleT = f32(this.settleT - dt);
       if (this.settleT > 0) return;
     }
 
     // 컨베이어 이동 — 도착해야 해체가 시작된다
     if (this.conveyorT < 1) {
-      const speed =
+      const speed = f32(
         1 /
-        Math.max(
-          0.05,
-          this.balance.line.conveyorSeconds / (1 + this.workshop.nodeSum("conveyorPct")),
-        );
-      this.conveyorT = Math.min(1, this.conveyorT + speed * dt);
+          Math.max(
+            0.05,
+            f32(this.balance.line.conveyorSeconds / f32(1 + this.workshop.nodeSum("conveyorPct"))),
+          ),
+      );
+      this.conveyorT = Math.min(1, f32(this.conveyorT + f32(speed * dt)));
       if (this.conveyorT >= 1 && this.current) this.current.revealed = true; // 도착 = 개봉
       return;
     }
@@ -254,7 +308,7 @@ export class YardLine {
     this.completeInner(it);
     this.queue.shift();
     this.conveyorT = 0;
-    this.settleT = this.balance.line.settleSeconds;
+    this.settleT = f32(this.balance.line.settleSeconds);
     this.events.onItemDone?.(it);
   }
 
@@ -334,4 +388,124 @@ export class YardLine {
     const dps = this.mode === "strip" ? this.workshop.stripDps : this.workshop.smashDps;
     return dps <= 0 ? 0 : it.hp / dps;
   }
+
+  // ---- 저장 ----
+
+  /**
+   * 라인 상태 전체 — **저장에 이게 없으면 새로고침이 진행 중인 작업을 삼킨다.**
+   *
+   * 처음엔 `Workshop.d`만 저장했다. 그러면 대기열·체력·컨베이어·모드·수령 대기 중인
+   * 발견물이 통째로 사라진다 — 등급 6짜리를 90% 해체한 상태에서 탭을 닫으면 매입가는
+   * 이미 냈는데 물건만 없어진다. 명백한 손실이고, 유저 입장에서는 버그다.
+   */
+  saveState(): YardState {
+    return {
+      offers: this.offers.map((o) => ({ ...o })),
+      queue: this.queue.map((it) => ({ ...it })),
+      mode: this.mode,
+      conveyorT: this.conveyorT,
+      settleT: this.settleT,
+      pendingPickup: this.pendingPickup,
+      pendingPickupCash: this.pendingPickupCash,
+    };
+  }
+
+  /**
+   * 저장된 라인 상태를 적용한다. **검증에 실패한 필드는 조용히 버리고 기본값으로 간다** —
+   * 손상된 세이브 하나가 게임 전체를 흰 화면으로 만드는 것이 최악이다.
+   * 반환값은 "온전히 복원했는가" — false면 호출부가 유저에게 알릴 수 있다.
+   */
+  restoreState(v: unknown): boolean {
+    if (typeof v !== "object" || v === null) return false;
+    const s = v as Partial<YardState>;
+    let intact = true;
+
+    if (Array.isArray(s.offers)) {
+      for (const o of s.offers) {
+        const row = this.offers.find((x) => x.grade === o?.grade);
+        if (row && typeof o.conditionId === "string" && this.hasCondition(o.conditionId)) {
+          row.conditionId = o.conditionId;
+        } else {
+          intact = false;
+        }
+      }
+    } else {
+      intact = false;
+    }
+
+    this.queue.length = 0;
+    if (Array.isArray(s.queue)) {
+      for (const raw of s.queue) {
+        const it = this.sanitizeItem(raw);
+        if (it) this.queue.push(it);
+        else intact = false;
+      }
+    } else {
+      intact = false;
+    }
+
+    this.mode = s.mode === "strip" ? "strip" : "smash";
+    this.conveyorT = clamp01(num(s.conveyorT, 0));
+    this.settleT = Math.max(0, num(s.settleT, 0));
+    this.pendingPickup =
+      typeof s.pendingPickup === "string" && this.balance.findItemOf(s.pendingPickup)
+        ? s.pendingPickup
+        : null;
+    this.pendingPickupCash = this.pendingPickup ? Math.max(0, num(s.pendingPickupCash, 0)) : 0;
+
+    return intact;
+  }
+
+  private hasCondition(id: string): boolean {
+    return this.balance.conditions.some((c) => c.id === id);
+  }
+
+  /** 저장된 물건 하나를 검증한다 — 하나라도 이상하면 그 물건만 버린다(게임은 계속된다). */
+  private sanitizeItem(raw: unknown): Item | null {
+    if (typeof raw !== "object" || raw === null) return null;
+    const r = raw as Partial<Item>;
+    if (!Number.isFinite(r.grade) || (r.grade as number) < 1) return null;
+    if (typeof r.conditionId !== "string" || !this.hasCondition(r.conditionId)) return null;
+
+    const maxHp = num(r.maxHp, 0);
+    if (!(maxHp > 0)) return null;
+
+    // 체력은 0..maxHp, 누적 데미지는 부수기 몫이 전체를 넘을 수 없다 — 넘으면 stripFrac이 음수가 되고
+    // 정산 배수가 뒤집힌다. 조작된 세이브로 자원을 뽑는 경로를 여기서 막는다.
+    const totalDmg = Math.max(0, Math.min(maxHp, num(r.totalDmg, 0)));
+    return {
+      grade: Math.floor(r.grade as number),
+      conditionId: r.conditionId,
+      revealed: r.revealed === true,
+      maxHp,
+      hp: Math.max(0, Math.min(maxHp, num(r.hp, maxHp))),
+      smashDmg: Math.max(0, Math.min(totalDmg, num(r.smashDmg, 0))),
+      totalDmg,
+      dropAcc: Math.max(0, num(r.dropAcc, 0)),
+      pendingFind:
+        typeof r.pendingFind === "string" && this.balance.findItemOf(r.pendingFind)
+          ? r.pendingFind
+          : null,
+      findRolled: r.findRolled === true,
+    };
+  }
+}
+
+/** 직렬화된 라인 상태 — 세이브가 이걸 통째로 싣는다. */
+export interface YardState {
+  offers: BuyOffer[];
+  queue: Item[];
+  mode: Axis;
+  conveyorT: number;
+  settleT: number;
+  pendingPickup: string | null;
+  pendingPickupCash: number;
+}
+
+function num(v: unknown, fallback: number): number {
+  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
+}
+
+function clamp01(v: number): number {
+  return Math.min(1, Math.max(0, v));
 }

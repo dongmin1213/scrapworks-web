@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "golden": "cd golden/csharp && dotnet script DumpFixtures.csx",
+    "golden": "SCRAP_BALANCE_PATH=${SCRAP_BALANCE_PATH:-../scrapworks/unity/Assets/Resources/balance.json} dotnet run --project golden/harness -c Release -- golden/fixtures/core.json",
     "build": "pnpm -C web build",
-    "bundle": "scripts/make-bundle.sh"
+    "bundle": "scripts/make-bundle.sh",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "^5.6.3",

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    원작 클래스를 **그대로 컴파일**해 픽스처를 만드는 하네스.
+    원본 레포의 .cs를 링크로 끌어온다 — 복사하지 않는다(복사본은 갈라진다).
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>CS0649;CS0169;CS0414</NoWarn>
+    <RootNamespace>Golden</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 원본 레포의 순수 로직 — 경로는 형제 폴더 기준 -->
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Shared/Balance.cs" />
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Shared/Clock.cs" />
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Shared/Loc.cs" />
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Teardown/YardLine.cs" />
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Workshop/Workshop.cs" />
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Shared/NumFmt.cs" />
+    <Compile Include="../../../scrapworks/unity/Assets/Scripts/Shared/SaveSystem.cs" />
+  </ItemGroup>
+</Project>

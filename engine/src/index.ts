@@ -7,6 +7,12 @@
 export { Balance } from "./balance";
 export type {
   BalanceData,
+  NodeDef,
+  OperatorDef,
+  SkillCfg,
+  ShopCfg,
+  ToolCfg,
+  StartCfg,
   ConditionDef,
   FindItem,
   LineCfg,
@@ -15,8 +21,8 @@ export type {
   SpecialCfg,
 } from "./balance";
 export { DotNetRandom } from "./rng";
-export type { Rng } from "./rng";
-export { Workshop, newGame } from "./workshop";
+export type { Rng, RngState } from "./rng";
+export { Workshop, newGame, sanitizeSave, SAVE_VERSION } from "./workshop";
 export type { SaveData } from "./workshop";
 export { YardLine } from "./yardLine";
-export type { Axis, Item, YardEvents } from "./yardLine";
+export type { Axis, BuyOffer, Item, YardEvents, YardState } from "./yardLine";

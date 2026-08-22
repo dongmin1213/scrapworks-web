@@ -3,3 +3,7 @@ dist
 *.tar.gz
 .DS_Store
 test-results
+
+# .NET 빌드 산출물 (골든 하네스)
+bin/
+obj/

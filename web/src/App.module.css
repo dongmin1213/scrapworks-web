@@ -201,6 +201,7 @@
 }
 
 .slot {
+  position: relative; /* .slotHelper 배지의 기준 */
   display: flex;
   flex: 1;
   align-items: center;
@@ -313,4 +314,44 @@
   font-weight: 700;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
+}
+
+/* ── 알림 배너 ──
+   조용히 넘어가면 안 되는 상태를 화면 맨 위에 한 줄로 알린다.
+   경고색을 쓰지 않는다 — 셋 다 오류가 아니라 사실 통보다. */
+.notice {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+button.notice {
+  cursor: pointer;
+}
+
+/* 매대 한 줄에 상태 이름이 들어간다 — 이름 없이 가격만 다르면 왜 비싼지 알 수 없다 */
+.buyCond {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+/* 조수가 잡은 칸 — 대기가 아니라 **동시에 처리 중**이라는 뜻이다 */
+.slot[data-helper] {
+  border-color: var(--accent);
+}
+
+.slotHelper {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  font-size: 10px;
+  text-align: center;
+  color: var(--accent);
 }

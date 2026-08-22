@@ -81,6 +81,75 @@ export interface FeelCfg {
   [key: string]: unknown;
 }
 
+/** 공구 티어별 특수 자원 요구량 — 인덱스는 **현재 티어**(0-base로 다음 단계를 가리킨다). */
+export interface SpecialCost {
+  copper: number;
+  boards: number;
+  cores: number;
+}
+
+export interface ToolCfg {
+  smashDps: number;
+  stripDps: number;
+  tierMult: number;
+  tierCount: number;
+  costBase: number;
+  costGrowth: number;
+  smashSpecial: SpecialCost[];
+  stripSpecial: SpecialCost[];
+}
+
+export interface NodeDef {
+  id: string;
+  /** 이 노드가 올리는 스탯 키 — `smashFlat`·`helper`·`queueAdd` 등 */
+  stat: string;
+  per: number;
+  max: number;
+  baseCost: number;
+}
+
+export interface SkillCfg {
+  costGrowth: number;
+  nodes: NodeDef[];
+}
+
+export interface OperatorDef {
+  id: string;
+  smashPct: number;
+  stripPct: number;
+  scrapValPct: number;
+  partsValPct: number;
+  cashValPct: number;
+  allValPct: number;
+  findPct: number;
+}
+
+export interface ShopCfg {
+  operatorCostBase: number;
+  operatorCostGrowth: number;
+  operators: OperatorDef[];
+}
+
+export interface CertCfg {
+  scrapDivisor: number;
+  multPerCert: number;
+}
+
+export interface NightCfg {
+  capHours: number;
+  /** 야간 산출 = 활성 시 처리율 × 이 비율 */
+  rateOfActive: number;
+}
+
+export interface StartCfg {
+  cash: number;
+  scrap: number;
+  parts: number;
+  smashTier: number;
+  stripTier: number;
+  maxGrade: number;
+}
+
 export interface BalanceData {
   line: LineCfg;
   machine: MachineCfg;
@@ -89,12 +158,12 @@ export interface BalanceData {
   find: FindCfg;
   conditions: ConditionDef[];
   feel: FeelCfg;
-  tool: Record<string, unknown>;
-  skill: Record<string, unknown>;
-  shop: Record<string, unknown>;
-  cert: Record<string, unknown>;
-  night: Record<string, unknown>;
-  start: Record<string, unknown>;
+  tool: ToolCfg;
+  skill: SkillCfg;
+  shop: ShopCfg;
+  cert: CertCfg;
+  night: NightCfg;
+  start: StartCfg;
 }
 
 export class Balance {
@@ -121,6 +190,24 @@ export class Balance {
   get conditions() {
     return this.data.conditions;
   }
+  get tool() {
+    return this.data.tool;
+  }
+  get skill() {
+    return this.data.skill;
+  }
+  get shop() {
+    return this.data.shop;
+  }
+  get cert() {
+    return this.data.cert;
+  }
+  get night() {
+    return this.data.night;
+  }
+  get start() {
+    return this.data.start;
+  }
 
   /** 등급 n 매입가 — 원본 `Balance.BuyPrice`. */
   buyPrice(grade: number): number {
@@ -143,6 +230,40 @@ export class Balance {
    */
   specialQty(base: number, grade: number): number {
     return base * Math.pow(this.special.qtyGrowth, grade - 1);
+  }
+
+  /** 스킬 노드 다음 레벨 비용 — 원본 `Balance.NodeCost`. */
+  nodeCost(n: NodeDef, level: number): number {
+    return n.baseCost * Math.pow(this.skill.costGrowth, level);
+  }
+
+  /** 작업자 rank 구입비 — 원본 `Balance.OperatorCost`. 지수가 `rank - 2`다(2단이 첫 구매). */
+  operatorCost(rank: number): number {
+    return this.shop.operatorCostBase * Math.pow(this.shop.operatorCostGrowth, rank - 2);
+  }
+
+  /** 공구 tier 구입비 — 원본 `Balance.ToolCost`. */
+  toolCost(tier: number): number {
+    return this.tool.costBase * Math.pow(this.tool.costGrowth, tier - 1);
+  }
+
+  /**
+   * 인증 수 — **상한이 규칙이다.** 원본 주석: 상한이 없으면 누적 고철이 커질 때
+   * `(int)` 캐스팅에서 음수 인증이 나와 배수가 뒤집힌다(원본 실측).
+   */
+  static readonly CERT_CAP = 10000;
+
+  certsFrom(cumScrap: number): number {
+    const v = Math.sqrt(Math.max(0, cumScrap) / this.cert.scrapDivisor);
+    return Math.floor(Math.min(v, Balance.CERT_CAP));
+  }
+
+  /**
+   * 인증 배수 — **선형 가산**. 지수(1.08^n)로 두면 환생을 반복할수록 배수가 폭주해
+   * 벽이 영구히 사라진다(원본 시뮬 실측: 6시간에 인증 5천만, 곡선 붕괴).
+   */
+  certMult(certs: number): number {
+    return 1 + this.cert.multPerCert * certs;
   }
 
   condition(id: string): ConditionDef {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Stage } from "./Stage";
 import styles from "./App.module.css";
 import { NumFmt } from "./numFmt";
@@ -16,11 +17,32 @@ import { useGame } from "./useGame";
  */
 export function App() {
   const { state, buy, setMode, claimFind } = useGame();
+  const [dismissedNight, setDismissedNight] = useState(false);
   const current = state.queue[0];
 
   return (
     <Stage>
       <div className={styles.screen}>
+        {/* ── 알림 ──
+            셋 다 **조용히 넘어가면 안 되는 것**들이다: 자리를 비운 사이 번 돈,
+            세이브를 일부만 복구했다는 사실, 다른 탭이 정본이라 여기서는 저장하지
+            않는다는 사실. 특히 마지막은 모르고 계속 놀면 진행이 통째로 날아간다. */}
+        {!state.hasLease && (
+          <p className={styles.notice} role="status">
+            다른 탭에서 게임이 열려 있습니다 — 이 탭은 저장하지 않습니다
+          </p>
+        )}
+        {state.saveRecovered && (
+          <p className={styles.notice} role="status">
+            저장 파일 일부가 손상돼 복구했습니다
+          </p>
+        )}
+        {state.nightCash > 0 && !dismissedNight && (
+          <button type="button" className={styles.notice} onClick={() => setDismissedNight(true)}>
+            야간 작업조가 {NumFmt.f(state.nightCash)}을 벌었습니다 — 탭해서 닫기
+          </button>
+        )}
+
         {/* ── 자원 ── */}
         <header className={styles.resources}>
           <div className={styles.cash}>
@@ -95,11 +117,18 @@ export function App() {
           {Array.from({ length: state.queueSlots }, (_, i) => {
             const item = state.queue[i];
             return (
-              <div key={i} className={styles.slot} data-filled={item ? true : undefined}>
+              <div
+                key={i}
+                className={styles.slot}
+                data-filled={item ? true : undefined}
+                data-helper={i === state.helperIndex || undefined}
+              >
                 {item ? (
                   <>
                     <img src={machineSprite(item.grade)} alt="" className={styles.slotIcon} />
                     <span className={styles.slotGrade}>{item.grade}</span>
+                    {/* 조수가 잡고 있는 칸 — 대기가 아니라 **동시에 처리 중**이라는 표시 */}
+                    {i === state.helperIndex && <span className={styles.slotHelper}>조수</span>}
                   </>
                 ) : (
                   <span className={styles.slotEmpty}>+</span>
@@ -109,20 +138,26 @@ export function App() {
           })}
         </section>
 
-        {/* ── 매입 ── */}
-        <section className={styles.buy} aria-label="매입">
-          {state.buyable.map((b) => (
-            <button
-              key={b.grade}
-              type="button"
-              className={styles.buyButton}
-              disabled={!b.affordable}
-              onClick={() => buy(b.grade)}
-            >
-              <span className={styles.buyName}>{machineName(b.grade)}</span>
-              <span className={styles.buyPrice}>{NumFmt.f(b.price)}</span>
-            </button>
-          ))}
+        {/* ── 매대 ──
+            **걸려 있는 매물을 그대로 보여준다.** 등급마다 상태가 하나 걸려 있고,
+            가격은 그 상태의 배수가 곱해진 **실제 결제액**이다. 기본가만 보여주면
+            25로 표시된 버튼이 실제로는 37.5를 요구해 눌러도 조용히 실패한다. */}
+        <section className={styles.buy} aria-label="매대">
+          {state.offers
+            .filter((o) => !o.locked)
+            .map((o) => (
+              <button
+                key={o.grade}
+                type="button"
+                className={styles.buyButton}
+                disabled={!o.affordable}
+                onClick={() => buy(o.grade)}
+              >
+                <span className={styles.buyName}>{machineName(o.grade)}</span>
+                <span className={styles.buyCond}>{conditionName(o.conditionId)}</span>
+                <span className={styles.buyPrice}>{NumFmt.f(o.price)}</span>
+              </button>
+            ))}
         </section>
 
         {/* ── 발견물 — 탭해서 수령 ── */}
