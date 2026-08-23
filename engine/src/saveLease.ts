@@ -78,3 +78,61 @@ export function canWriteSave(
 export function bootstrapMayWrite(leaseHolder: string | null, myLeaseId: string): boolean {
   return leaseHolder === null || leaseHolder === myLeaseId;
 }
+
+/**
+ * ── 리스 하트비트 ──
+ *
+ * <b>소유권을 「누가 마지막에 썼나」로만 보면 뺏기가 너무 쉽다.</b> 새 탭이 열리면
+ * 기존 주인의 생사를 묻지 않고 그냥 자기 이름을 적었고, 그다음 밀린 부팅 저장이
+ * 자기 <b>옛 메모리</b>를 최신 리비전으로 기록했다. 원래 주인은 storage 이벤트를 받아
+ * 영구 읽기전용이 되고, 그 탭에 있던 진행이 사라진다 (적대적 리뷰 R10-12).
+ *
+ * 그래서 리스에 <b>시각</b>을 붙인다. 주인은 살아 있는 동안 주기적으로 갱신하고,
+ * 새 탭은 <b>만료된 리스만</b> 가져간다. 탭을 그냥 닫아도 TTL이 지나면 풀리므로
+ * 「닫은 탭이 소유권을 물고 죽는」 상태는 생기지 않는다.
+ */
+export interface Lease {
+  id: string;
+  /** 마지막 갱신 시각(ms) */
+  at: number;
+}
+
+/** 갱신 주기와 만료 — 만료는 주기의 몇 배여야 한 번 걸러도 안 뺏긴다. */
+export const LEASE_HEARTBEAT_MS = 2000;
+export const LEASE_TTL_MS = 7000;
+
+/** 저장된 리스 문자열을 읽는다. 옛 형식(그냥 id 문자열)도 받는다. */
+export function parseLease(raw: string | null): Lease | null {
+  if (raw === null) return null;
+  try {
+    const v = JSON.parse(raw) as Partial<Lease>;
+    if (typeof v?.id === "string" && typeof v.at === "number") return { id: v.id, at: v.at };
+  } catch {
+    /* JSON이 아니다 — 옛 형식 */
+  }
+  // **옛 형식은 「시각 없음」이다.** 만료됐다고 볼 수도, 살아 있다고 볼 수도 없는데
+  // 살아 있다고 보면 그 값이 영원히 남아 아무도 못 쓰게 된다. 만료로 본다.
+  return raw.length > 0 ? { id: raw, at: 0 } : null;
+}
+
+export function serializeLease(lease: Lease): string {
+  return JSON.stringify(lease);
+}
+
+/**
+ * 지금 이 리스를 가져가도 되는가.
+ *
+ * <b>내 것이거나, 아무도 없거나, 주인이 TTL 동안 소식이 없을 때만</b>이다.
+ * 살아 있는 주인에게서 뺏지 않는다 — 그게 R10-12에서 진행이 사라진 경로다.
+ */
+export function mayClaimLease(existing: Lease | null, myLeaseId: string, nowMs: number): boolean {
+  if (existing === null) return true;
+  if (existing.id === myLeaseId) return true;
+  return nowMs - existing.at >= LEASE_TTL_MS;
+}
+
+/** 지금 리스를 들고 있는 «살아 있는» 주인의 id. 만료됐거나 없으면 null. */
+export function liveLeaseHolder(existing: Lease | null, nowMs: number): string | null {
+  if (existing === null) return null;
+  return nowMs - existing.at < LEASE_TTL_MS ? existing.id : null;
+}

@@ -3,6 +3,11 @@ import {
   bootstrapMayWrite,
   canWriteSave,
   DotNetRandom,
+  LEASE_HEARTBEAT_MS,
+  liveLeaseHolder,
+  mayClaimLease,
+  parseLease,
+  serializeLease,
   Session,
   Workshop,
   nextRevision,
@@ -160,6 +165,23 @@ function readRaw(key: string): unknown {
   }
 }
 
+/** 리스 문자열 원본 — JSON이 아닐 수 있어 `readRaw`를 못 쓴다(옛 형식은 그냥 id 문자열). */
+function readLease(): string | null {
+  try {
+    return localStorage.getItem(LEASE_KEY);
+  } catch {
+    return null; // 스토리지가 없으면 소유권 개념도 없다 — 혼자 도는 것으로 본다
+  }
+}
+
+function writeLease(leaseId: string, nowMs: number): void {
+  try {
+    localStorage.setItem(LEASE_KEY, serializeLease({ id: leaseId, at: nowMs }));
+  } catch {
+    /* 스토리지가 없으면 소유권 개념도 없다 */
+  }
+}
+
 function loadSaveFile(): Partial<SaveFile> | null {
   const cur = readRaw(SAVE_KEY);
   if (cur && typeof cur === "object") return cur as Partial<SaveFile>;
@@ -191,6 +213,8 @@ export function useGame() {
      * 다음 새로고침에 사라진다.
      */
     pendingSave: boolean;
+    /** 밀어 둔 부팅 스냅샷이 출발한 저장 리비전 — 그 사이 바뀌었으면 버린다 */
+    baseRev: number;
   }>();
 
   if (!boot.current) boot.current = bootstrap();
@@ -319,21 +343,47 @@ export function useGame() {
       return typeof file?.rev === "number" && file.rev > revRef.current;
     };
 
-    const claim = () => {
-      try {
-        localStorage.setItem(LEASE_KEY, leaseId);
-      } catch {
-        /* 스토리지가 없으면 소유권 개념도 없다 — 혼자 도는 것으로 본다 */
-      }
+    /** 밀어 둔 부팅 스냅샷이 출발한 저장이 그 사이 바뀌었는가 — 바뀌었으면 낡은 것이다. */
+    const staleSnapshot = () => {
+      const file = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
+      return typeof file?.rev === "number" && file.rev !== boot.current!.baseRev;
     };
-    claim();
 
-    // **부팅이 밀어 둔 저장을 여기서 기록한다** — 이제 리스가 우리 것이다.
-    // 부팅은 리스를 주장하기 전에 돌기 때문에 그때는 쓸 수 없었다 (R9-20).
-    //
-    // 포트가 아직 안 꽂혔을 수 있다(저장 이펙트가 이 이펙트보다 뒤에 돈다). 그때는
-    // 플래그를 남겨 두고 포트가 꽂히는 쪽에서 처리한다 — 여기서 못 썼다고 잃으면
-    // 정산분이 메모리에만 남아 다음 새로고침에 사라진다.
+    /**
+     * 소유권 주장 — <b>살아 있는 주인에게서 뺏지 않는다.</b>
+     *
+     * 전에는 열자마자 무조건 자기 이름을 적었고, 그다음 밀린 부팅 저장이 <b>이 탭의
+     * 옛 메모리</b>를 최신 리비전으로 기록했다. 원래 주인은 storage 이벤트를 받아
+     * 영구 읽기전용이 되고 그 탭의 진행이 사라졌다 (적대적 리뷰 R10-12).
+     *
+     * @returns 소유권을 얻었으면 true
+     */
+    const claim = (): boolean => {
+      const now = Date.now();
+      if (!mayClaimLease(parseLease(readLease()), leaseId, now)) return false;
+      writeLease(leaseId, now);
+      return true;
+    };
+
+    const got = claim();
+    setHasLease(got);
+
+    /*
+     * **부팅이 밀어 둔 저장을 여기서 기록한다** — 이제 리스가 우리 것이다.
+     * 부팅은 리스를 주장하기 전에 돌기 때문에 그때는 쓸 수 없었다 (R9-20).
+     *
+     * <b>다만 그 사이에 저장이 바뀌었으면 버린다.</b> 밀어 둔 것은 «부팅 시점의
+     * 스냅샷»이고, 그 뒤 다른 탭이 진행시켰다면 그것을 덮어쓰는 것이 된다 (R10-12).
+     *
+     * 포트가 아직 안 꽂혔을 수 있다(저장 이펙트가 이 이펙트보다 뒤에 돈다). 그때는
+     * 플래그를 남겨 두고 포트가 꽂히는 쪽에서 처리한다.
+     */
+    if (boot.current!.pendingSave && !got) {
+      boot.current!.pendingSave = false; // 주인이 따로 있다 — 내 스냅샷을 밀어 넣지 않는다
+    }
+    if (boot.current!.pendingSave && staleSnapshot()) {
+      boot.current!.pendingSave = false;
+    }
     if (boot.current!.pendingSave && boot.current!.savePort.current) {
       boot.current!.pendingSave = false;
       boot.current!.savePort.current();
@@ -341,9 +391,14 @@ export function useGame() {
 
     // 다른 탭이 소유권을 가져가면 storage 이벤트가 온다 (같은 탭에서는 발생하지 않는다)
     const onStorage = (e: StorageEvent) => {
-      if (e.key === LEASE_KEY && e.newValue && e.newValue !== leaseId) {
-        lostLease.current = true;
-        setHasLease(false);
+      // 리스 값은 이제 {id, at} JSON이다 — **id로 비교한다**. 하트비트가 갱신할
+      // 때마다 문자열이 달라지므로 원문 비교로는 자기 갱신에도 소유권을 잃는다.
+      if (e.key === LEASE_KEY) {
+        const holder = parseLease(e.newValue)?.id;
+        if (holder && holder !== leaseId) {
+          lostLease.current = true;
+          setHasLease(false);
+        }
       }
       // 다른 탭이 **저장**하면 그 순간 우리 상태가 낡는다 — 리스와 별개로 확인한다
       if (e.key === SAVE_KEY && stale()) {
@@ -363,12 +418,41 @@ export function useGame() {
         setHasLease(false);
         return;
       }
-      claim();
+      setHasLease(claim());
     };
+
+    /*
+     * **주인은 살아 있다고 계속 알린다.** 이게 없으면 TTL이 지나는 순간 다른 탭이
+     * 정당하게 가져가 버린다 — 하트비트와 만료는 한 쌍이어야 한다.
+     *
+     * 주인이 아닌 탭은 같은 주기로 «주인이 아직 있나»를 본다. 주인이 조용해지면
+     * (탭을 닫았다) 그때 가져간다 — 닫은 탭이 소유권을 물고 죽지 않게.
+     */
+    const beat = window.setInterval(() => {
+      if (lostLease.current) return; // 한 번 잃으면 새로고침 전까지 되찾지 않는다
+      const now = Date.now();
+      const lease = parseLease(readLease());
+      if (lease?.id === leaseId) {
+        writeLease(leaseId, now);
+        return;
+      }
+      if (mayClaimLease(lease, leaseId, now)) {
+        // 주인이 사라졌다 — 인수한다. **인수 뒤에는 최신 저장이 기준이다**:
+        // 내 메모리가 낡았으면 쓰지 않고 읽기 전용으로 남는다(진행을 덮지 않게).
+        if (stale()) {
+          lostLease.current = true;
+          setHasLease(false);
+          return;
+        }
+        writeLease(leaseId, now);
+        setHasLease(true);
+      }
+    }, LEASE_HEARTBEAT_MS);
 
     window.addEventListener("storage", onStorage);
     window.addEventListener("focus", onFocus);
     return () => {
+      window.clearInterval(beat);
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("focus", onFocus);
     };
@@ -400,7 +484,7 @@ export function useGame() {
     // 그대로 성립한다 — 그 환경에서는 이것이 유일한 직렬화 수단이다.
     let leaseHolder: string | null = null;
     try {
-      leaseHolder = localStorage.getItem(LEASE_KEY);
+      leaseHolder = liveLeaseHolder(parseLease(readLease()), Date.now());
     } catch {
       /* 스토리지를 못 읽으면 소유권 개념도 없다 — 혼자 도는 것으로 본다 */
     }
@@ -506,6 +590,17 @@ export function useGame() {
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, [session, snapshot, hasLease]);
+
+  /**
+   * 소유권이 바뀌면 <b>그 사실을 화면에 즉시 내보낸다.</b>
+   *
+   * 루프는 리스가 없으면 `setState`에 닿기 전에 돌아 나간다(그게 「멈추는 편이 정직하다」의
+   * 구현이다). 그런데 그 때문에 <b>소유권을 잃었다는 안내 자체가 화면에 못 올라갔다</b> —
+   * 유저는 멈춘 줄 모르고 계속 논다. 안내를 띄우려고 만든 상태인데 안내가 안 뜬 것이다.
+   */
+  useEffect(() => {
+    setState(snapshot(hasLease));
+  }, [hasLease, snapshot]);
 
   // 주기 저장 — 밸런스의 saveIntervalSec을 따른다(수치는 balance.json이 소유)
   useEffect(() => {
@@ -695,13 +790,10 @@ function bootstrap() {
   // 다만 **주인이 이미 있으면 쓰지 않는다.** 부팅은 리스를 주장하기 전에 돌기 때문에,
   // 검사 없이 쓰면 다른 탭이 소유한 저장을 자기 이름으로 덮어쓴다 (적대적 리뷰 R9-20).
   // 그때는 정산 결과가 메모리에만 남고, 리스를 실제로 얻으면 평상시 저장이 기록한다.
-  let leaseHolder: string | null = null;
-  try {
-    leaseHolder = localStorage.getItem(LEASE_KEY);
-  } catch {
-    /* 스토리지를 못 읽으면 소유권 개념도 없다 — 혼자 도는 것으로 본다 */
-  }
-  const mayWrite = bootstrapMayWrite(leaseHolder, leaseId);
+  // **살아 있는 주인만 주인이다.** 닫힌 탭이 남긴 리스는 만료된 것으로 보고 무시한다 —
+  // 아니면 탭을 한 번 닫는 것만으로 게임이 영원히 읽기 전용이 된다.
+  const holder = liveLeaseHolder(parseLease(readLease()), now);
+  const mayWrite = bootstrapMayWrite(holder, leaseId);
 
   if (nightCash > 0 && mayWrite) {
     try {
@@ -720,6 +812,17 @@ function bootstrap() {
     }
   }
 
-  // 부팅이 못 썼으면 **저장이 아직 밀려 있다** — 리스를 얻는 즉시 기록해야 한다
-  return { balance, workshop, line, session, rng, recovered, nightCash, rev, savePort, leaseId, pendingSave: !mayWrite };
+  /*
+   * 부팅이 못 썼으면 저장이 밀려 있다 — 다만 <b>정산분이 있을 때만</b>이다.
+   *
+   * 전에는 `!mayWrite`이면 무조건 밀어 두었는데, 그러면 야간 수입이 0인 탭도
+   * 「내 옛 스냅샷을 쓰겠다」는 예약을 걸어 둔 셈이 된다. 리스를 얻는 순간 그것이
+   * 최신 저장을 덮는다 (적대적 리뷰 R10-12). 쓸 것이 없으면 밀어 두지 않는다.
+   */
+  return {
+    balance, workshop, line, session, rng, recovered, nightCash, rev, savePort, leaseId,
+    pendingSave: !mayWrite && nightCash > 0,
+    /** 이 스냅샷이 어느 저장에서 출발했는가 — 그 사이 바뀌었으면 밀린 저장을 버린다 */
+    baseRev: file?.rev ?? 0,
+  };
 }

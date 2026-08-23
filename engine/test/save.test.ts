@@ -2,7 +2,17 @@ import { describe, expect, it } from "vitest";
 import balanceJson from "../content/balance.json";
 import { Balance, type BalanceData } from "../src/balance";
 import { DotNetRandom } from "../src/rng";
-import { bootstrapMayWrite, canWriteSave, nextRevision, shouldYieldSave } from "../src/saveLease";
+import {
+  LEASE_TTL_MS,
+  bootstrapMayWrite,
+  canWriteSave,
+  liveLeaseHolder,
+  mayClaimLease,
+  nextRevision,
+  parseLease,
+  serializeLease,
+  shouldYieldSave,
+} from "../src/saveLease";
 import { newGame, sanitizeSave, Workshop } from "../src/workshop";
 import { YardLine } from "../src/yardLine";
 
@@ -459,5 +469,69 @@ describe("bootstrapMayWrite", () => {
     const holder = "tab-A";
     expect(bootstrapMayWrite(holder, "tab-A")).toBe(true);
     expect(bootstrapMayWrite(holder, "tab-B")).toBe(false);
+  });
+});
+
+/**
+ * 리스 하트비트 — <b>살아 있는 주인에게서 뺏지 않는다.</b>
+ *
+ * 「누가 마지막에 썼나」로만 소유권을 보면 새 탭이 열리는 것만으로 소유권이 넘어갔고,
+ * 그다음 밀린 부팅 저장이 <b>새 탭의 옛 메모리</b>를 최신 리비전으로 기록했다.
+ * 원래 주인은 영구 읽기전용이 되고 그 탭의 진행이 사라졌다 (적대적 리뷰 R10-12).
+ *
+ * 그렇다고 「먼저 잡은 탭이 영원히 주인」이면 탭을 한 번 닫는 순간 게임이 통째로
+ * 읽기 전용이 된다. <b>시각을 붙여 만료를 두는 것</b>이 그 둘 사이의 답이다.
+ */
+describe("리스 하트비트", () => {
+  const NOW = 1_000_000;
+
+  it("살아 있는 주인은 못 뺏는다 — 여기가 진행이 사라지던 자리다", () => {
+    const alive = { id: "A", at: NOW - 1000 };
+    expect(mayClaimLease(alive, "B", NOW)).toBe(false);
+  });
+
+  it("만료된 주인은 가져간다 — 탭을 닫았다고 게임이 영원히 잠기지 않게", () => {
+    const dead = { id: "A", at: NOW - LEASE_TTL_MS };
+    expect(mayClaimLease(dead, "B", NOW)).toBe(true);
+  });
+
+  it("내 리스는 언제나 갱신할 수 있다", () => {
+    expect(mayClaimLease({ id: "me", at: 0 }, "me", NOW)).toBe(true);
+  });
+
+  it("아무도 없으면 가져간다", () => {
+    expect(mayClaimLease(null, "me", NOW)).toBe(true);
+  });
+
+  it("살아 있는 주인만 주인으로 센다", () => {
+    expect(liveLeaseHolder({ id: "A", at: NOW - 100 }, NOW)).toBe("A");
+    expect(liveLeaseHolder({ id: "A", at: NOW - LEASE_TTL_MS }, NOW)).toBeNull();
+    expect(liveLeaseHolder(null, NOW)).toBeNull();
+  });
+
+  it("왕복이 값을 보존한다", () => {
+    const lease = { id: "abc", at: 12345 };
+    expect(parseLease(serializeLease(lease))).toEqual(lease);
+  });
+
+  it("옛 형식(그냥 id 문자열)은 만료로 본다 — 안 그러면 그 값이 영원히 남아 아무도 못 쓴다", () => {
+    const old = parseLease("legacy-tab-id");
+    expect(old).toEqual({ id: "legacy-tab-id", at: 0 });
+    expect(mayClaimLease(old, "me", NOW)).toBe(true);
+  });
+
+  it("빈 값과 깨진 값은 리스가 없는 것이다", () => {
+    expect(parseLease(null)).toBeNull();
+    expect(parseLease("")).toBeNull();
+    expect(parseLease("{\"id\":123}")).toEqual({ id: "{\"id\":123}", at: 0 });
+  });
+
+  it("부팅은 살아 있는 주인이 있으면 쓰지 않는다", () => {
+    const holder = liveLeaseHolder({ id: "A", at: NOW - 500 }, NOW);
+    expect(bootstrapMayWrite(holder, "B")).toBe(false);
+
+    // 주인이 조용해지면 써도 된다 — 경쟁자가 없다
+    const gone = liveLeaseHolder({ id: "A", at: NOW - LEASE_TTL_MS - 1 }, NOW);
+    expect(bootstrapMayWrite(gone, "B")).toBe(true);
   });
 });
