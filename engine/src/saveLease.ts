@@ -36,3 +36,25 @@ export function shouldYieldSave(existing: SaveOwnership | null, mine: { rev: num
 export function nextRevision(existing: SaveOwnership | null, mine: { rev: number }): number {
   return Math.max(mine.rev, (existing?.rev ?? 0) + 1);
 }
+
+/**
+ * 지금 이 탭이 저장을 써도 되는가 — <b>owner 비교로는 못 막는 구멍을 닫는다.</b>
+ *
+ * <code>shouldYieldSave</code>는 저장 파일의 <code>owner</code>를 보는데, 아직 아무도
+ * 쓰지 않은 파일(첫 저장·구버전 세이브)에는 그 필드가 없다. 그러면 두 탭이 모두
+ * "충돌 아님"으로 판정하고 같은 리비전을 쓴다 (적대적 리뷰 R8-11).
+ *
+ * 리스 키는 <b>누가 마지막에 주장했는지</b>를 하나의 값으로 답하므로 그 경우를 닫는다.
+ * <code>navigator.locks</code>가 없는 브라우저에서는 이것이 유일한 직렬화 수단이다 —
+ * 완전한 CAS는 아니지만, 소유자가 아닌 탭이 쓰지 않는 것만으로 대부분의 덮어쓰기가 사라진다.
+ *
+ * @param latched 이미 소유권을 잃은 탭인가 (한 번 잃으면 새로고침 전까지 되찾지 않는다)
+ * @param leaseHolder 리스 키에 적힌 값. 스토리지를 못 읽으면 null — 혼자 도는 것으로 본다.
+ */
+export function canWriteSave(
+  { latched, leaseHolder, myLeaseId }: { latched: boolean; leaseHolder: string | null; myLeaseId: string },
+): boolean {
+  if (latched) return false;
+  if (leaseHolder === null) return true;
+  return leaseHolder === myLeaseId;
+}

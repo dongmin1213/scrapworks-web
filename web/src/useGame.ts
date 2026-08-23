@@ -1,5 +1,6 @@
 import {
   Balance,
+  canWriteSave,
   DotNetRandom,
   Session,
   Workshop,
@@ -367,11 +368,38 @@ export function useGame() {
    * 그냥 실행한다 — 그 경우 경합 창이 남지만, 저장을 아예 못 하는 것보다는 낫다.
    */
   const writeSave = useCallback((): void => {
+    // **여기서도 fail-closed로 확인한다.** 호출부(save/saveNow)가 검사한다고
+    // 믿으면, 락 콜백이 큐에서 기다리는 사이에 소유권을 잃은 경우가 빠져나간다
+    // (적대적 리뷰 R8-11). 쓰기 직전이 마지막 방어선이다.
+    // **리스 키가 우리 것인지 동기적으로 확인한다.**
+    //
+    // 파일의 `owner`만으로는 못 막는 구멍이 하나 있다: 아직 아무도 쓰지 않은
+    // 파일(첫 저장·구버전 세이브)에는 owner가 없어 두 탭이 모두 "충돌 아님"으로
+    // 판정하고 같은 리비전을 쓴다. 리스 키는 **누가 마지막에 주장했는지** 하나의
+    // 값으로 답하므로 그 경우를 닫는다.
+    //
+    // 이 검사는 `navigator.locks`가 없는 브라우저(Safari 프라이빗 등)에서도
+    // 그대로 성립한다 — 그 환경에서는 이것이 유일한 직렬화 수단이다.
+    let leaseHolder: string | null = null;
+    try {
+      leaseHolder = localStorage.getItem(LEASE_KEY);
+    } catch {
+      /* 스토리지를 못 읽으면 소유권 개념도 없다 — 혼자 도는 것으로 본다 */
+    }
+    // 판정은 엔진의 순수 함수가 한다 — 브라우저 없이 테스트할 수 있어야 한다
+    if (!canWriteSave({ latched: lostLease.current, leaseHolder, myLeaseId: leaseId })) {
+      lostLease.current = true;
+      setHasLease(false);
+      return;
+    }
+
     try {
       const existing = readRaw(SAVE_KEY) as Partial<SaveFile> | null;
       const mine = { rev: revRef.current, owner: leaseId };
       // 판정은 엔진의 순수 함수가 한다 — 브라우저 없이 테스트할 수 있어야 한다
       if (shouldYieldSave(existing as SaveOwnership | null, mine)) {
+        // 소유권을 잃었으면 **래치한다** — 되찾으면 낡은 메모리로 다시 덮어쓴다
+        lostLease.current = true;
         setHasLease(false);
         return;
       }
@@ -411,7 +439,7 @@ export function useGame() {
    * 확실히 잃는 것보다 드물게 겹치는 편이 낫다. 겹침은 리비전·owner가 잡는다.
    */
   const saveNow = useCallback(() => {
-    if (!hasLease) return;
+    if (!hasLease || lostLease.current) return;
     writeSave();
   }, [hasLease, writeSave]);
 

@@ -92,7 +92,17 @@ export function newGame(balance: Balance): SaveData {
 }
 
 /** 세이브 스키마 버전 — 필드가 늘거나 의미가 바뀌면 올리고 마이그레이션을 붙인다. */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
+
+/**
+ * 읽을 수 있는 이전 버전들 — <b>버전이 다르다는 이유만으로 "손상"이라고 하지 않는다.</b>
+ *
+ * v3 → v4: 수령 대기 발견물에 <c>pendingPickupGrade</c>가 생겼다. v3 파일에는 그 필드가
+ * 없으므로 저장된 금액에서 등급을 되찾는다 (yardLine.restoreState 참조). 필드를 늘리면서
+ * 버전을 올리지 않아 <b>기존 플레이어의 보상이 조용히 줄어들던</b> 것을 여기서 닫는다
+ * (적대적 리뷰 R8-10).
+ */
+const READABLE_VERSIONS = new Set([3, SAVE_VERSION]);
 
 /**
  * 저장된 값을 **필드 단위로 검증해** 온전한 SaveData를 만든다.
@@ -180,7 +190,7 @@ export function sanitizeSave(balance: Balance, raw: unknown): { d: SaveData; int
     intact = false;
   }
 
-  if (p.version !== undefined && p.version !== SAVE_VERSION) intact = false;
+  if (p.version !== undefined && !READABLE_VERSIONS.has(p.version as number)) intact = false;
   return { d, intact };
 }
 

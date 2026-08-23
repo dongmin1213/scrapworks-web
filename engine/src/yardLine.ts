@@ -494,19 +494,45 @@ export class YardLine {
         : null;
 
     if (this.pendingPickup) {
-      const grade = Math.min(
-        this.balance.machine.gradeCap,
-        Math.max(1, Math.floor(num(s.pendingPickupGrade, 1))),
-      );
+      const cashMult = this.balance.findItemOf(this.pendingPickup)?.cashMult ?? 1;
+      // **v3 파일에는 등급이 없다.** 없다고 1로 두면 고등급 발견물의 보상이
+      // 조용히 깎인다 — 기존 플레이어가 손해를 본다 (적대적 리뷰 R8-10).
+      // 저장된 금액을 **그대로 믿지는 않되**(R7-17), 그 금액이 어느 등급에서
+      // 나왔는지를 역산해 되찾는다. 등급은 유한한 정수 범위라 맞춰 볼 수 있다.
+      const grade = Number.isFinite(num(s.pendingPickupGrade, NaN))
+        ? Math.min(this.balance.machine.gradeCap, Math.max(1, Math.floor(num(s.pendingPickupGrade, 1))))
+        : this.gradeFromCash(num(s.pendingPickupCash, NaN), cashMult);
       this.pendingPickupGrade = grade;
-      this.pendingPickupCash =
-        this.balance.yieldTotal(grade) * (this.balance.findItemOf(this.pendingPickup)?.cashMult ?? 1);
+      this.pendingPickupCash = this.balance.yieldTotal(grade) * cashMult;
     } else {
       this.pendingPickupGrade = 0;
       this.pendingPickupCash = 0;
     }
 
     return intact;
+  }
+
+  /**
+   * 저장된 금액에서 등급을 되찾는다 — <b>v3 세이브를 위한 마이그레이션.</b>
+   *
+   * 금액은 `yieldTotal(grade) × cashMult`이고 `yieldTotal`은 등급에 대해 단조 증가한다.
+   * 따라서 가능한 등급을 훑어 **가장 가까운 하나**를 고를 수 있다. 금액을 그대로
+   * 쓰지 않는 이유는 R7-17과 같다 — 조작된 큰 수를 그대로 지급하지 않기 위해서다.
+   * 어느 등급으로도 설명되지 않는 금액(위조·손상)은 1로 떨어진다.
+   */
+  private gradeFromCash(cash: number, cashMult: number): number {
+    if (!Number.isFinite(cash) || cash <= 0 || cashMult <= 0) return 1;
+    let best = 1;
+    let bestDiff = Infinity;
+    for (let g = 1; g <= this.balance.machine.gradeCap; g++) {
+      const diff = Math.abs(this.balance.yieldTotal(g) * cashMult - cash);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        best = g;
+      }
+    }
+    // 상대 오차가 크면 어느 등급의 값도 아니다 — 조작된 값으로 보고 최소로 준다
+    return bestDiff <= Math.abs(cash) * 0.01 ? best : 1;
   }
 
   private hasCondition(id: string): boolean {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import balanceJson from "../content/balance.json";
 import { Balance, type BalanceData } from "../src/balance";
 import { DotNetRandom } from "../src/rng";
-import { nextRevision, shouldYieldSave } from "../src/saveLease";
+import { canWriteSave, nextRevision, shouldYieldSave } from "../src/saveLease";
 import { newGame, sanitizeSave, Workshop } from "../src/workshop";
 import { YardLine } from "../src/yardLine";
 
@@ -313,6 +313,59 @@ describe("세이브 불변식", () => {
     expect(line.pendingPickupCash).toBeLessThan(1e6);
   });
 
+  /**
+   * **v3 세이브를 v4가 읽을 때 보상이 줄어들면 안 된다.**
+   *
+   * `pendingPickupGrade`를 추가하면서 SAVE_VERSION을 올리지 않았다. 이전 배포가 만든
+   * 정상 v3 파일에는 그 필드가 없으므로 복원이 등급 1로 간주하고 금액을 다시 계산했고,
+   * 고등급 발견물이 수령 대기인 사람의 보상이 **조용히 깎였다** (적대적 리뷰 R8-10).
+   */
+  it("v3 세이브의 고등급 수령 대기 보상이 깎이지 않는다", () => {
+    const { balance, line } = freshWithBalance();
+    const findId = balance.find.items[0].id;
+    const cashMult = balance.findItemOf(findId)?.cashMult ?? 1;
+    const grade = Math.min(7, balance.machine.gradeCap);
+    const v3Cash = balance.yieldTotal(grade) * cashMult;
+
+    // v3 파일 그대로 — pendingPickupGrade가 **없다**
+    line.restoreState({
+      offers: line.offers,
+      queue: [],
+      conveyorT: 0,
+      pendingPickup: findId,
+      pendingPickupCash: v3Cash,
+    });
+
+    expect(line.pendingPickupGrade).toBe(grade);
+    expect(line.pendingPickupCash).toBeCloseTo(v3Cash, 6);
+  });
+
+  it("v3 세이브라도 어느 등급으로도 설명 안 되는 금액은 최소로 떨어진다", () => {
+    const { balance, line } = freshWithBalance();
+    const findId = balance.find.items[0].id;
+    line.restoreState({
+      offers: line.offers,
+      queue: [],
+      conveyorT: 0,
+      pendingPickup: findId,
+      pendingPickupCash: 1e300, // 위조 — v3에도 등급 필드가 없는 척한다
+    });
+
+    const floor = balance.yieldTotal(1) * (balance.findItemOf(findId)?.cashMult ?? 1);
+    expect(line.pendingPickupGrade).toBe(1);
+    expect(line.pendingPickupCash).toBeCloseTo(floor, 6);
+  });
+
+  it("v3은 읽을 수 있는 버전이라 '손상'으로 표시되지 않는다", () => {
+    const { balance } = freshWithBalance();
+    expect(sanitizeSave(balance, { version: 3 }).intact).toBe(true);
+  });
+
+  it("모르는 버전은 손상으로 표시된다", () => {
+    const { balance } = freshWithBalance();
+    expect(sanitizeSave(balance, { version: 99 }).intact).toBe(false);
+  });
+
   it("매대는 한 칸만 손상돼도 전부 새로 굴린다 — 부분 적용이 시점을 어긋나게 한다", () => {
     const { line } = fresh();
     const saved = line.saveState();
@@ -337,5 +390,45 @@ describe("세이브 불변식", () => {
       rng.nextDouble();
       expect(DotNetRandom.isValidState(rng.saveState()), `${i}번째 표본 뒤 상태가 거부됐다`).toBe(true);
     }
+  });
+});
+
+/**
+ * 저장 권한 — <b>파일의 owner만으로는 못 막는 구멍.</b>
+ *
+ * 아직 아무도 쓰지 않은 파일에는 owner가 없어 두 탭이 모두 "충돌 아님"으로 판정하고
+ * 같은 리비전을 쓴다. `navigator.locks`가 없는 브라우저에서는 그 창이 항상 열려 있다
+ * (적대적 리뷰 R8-11). 리스 키가 그 경우를 닫는다.
+ */
+describe("canWriteSave", () => {
+  it("리스를 잃은 탭은 종료 직전에도 쓰지 않는다", () => {
+    expect(canWriteSave({ latched: true, leaseHolder: "me", myLeaseId: "me" })).toBe(false);
+  });
+
+  it("리스가 남의 것이면 쓰지 않는다 — owner 없는 첫 저장도 여기서 막힌다", () => {
+    expect(canWriteSave({ latched: false, leaseHolder: "other", myLeaseId: "me" })).toBe(false);
+  });
+
+  it("리스가 내 것이면 쓴다", () => {
+    expect(canWriteSave({ latched: false, leaseHolder: "me", myLeaseId: "me" })).toBe(true);
+  });
+
+  it("스토리지를 못 읽으면 혼자 도는 것으로 보고 쓴다 — 저장을 아예 못 하는 것보다 낫다", () => {
+    expect(canWriteSave({ latched: false, leaseHolder: null, myLeaseId: "me" })).toBe(true);
+  });
+
+  it("owner 없는 저장에 두 탭이 붙어도 리스를 쥔 쪽만 쓴다", () => {
+    const existing = { rev: 3 }; // owner 없음 — 구버전 세이브
+    const a = { rev: 3, owner: "tab-A" };
+    const b = { rev: 3, owner: "tab-B" };
+
+    // owner 비교만으로는 둘 다 통과한다 — 이것이 구멍이었다
+    expect(shouldYieldSave(existing, a)).toBe(false);
+    expect(shouldYieldSave(existing, b)).toBe(false);
+
+    // 리스 키가 하나의 답을 준다
+    const holder = "tab-A";
+    expect(canWriteSave({ latched: false, leaseHolder: holder, myLeaseId: a.owner })).toBe(true);
+    expect(canWriteSave({ latched: false, leaseHolder: holder, myLeaseId: b.owner })).toBe(false);
   });
 });
