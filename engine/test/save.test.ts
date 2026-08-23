@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import balanceJson from "../content/balance.json";
 import { Balance, type BalanceData } from "../src/balance";
 import { DotNetRandom } from "../src/rng";
-import { canWriteSave, nextRevision, shouldYieldSave } from "../src/saveLease";
+import { bootstrapMayWrite, canWriteSave, nextRevision, shouldYieldSave } from "../src/saveLease";
 import { newGame, sanitizeSave, Workshop } from "../src/workshop";
 import { YardLine } from "../src/yardLine";
 
@@ -430,5 +430,34 @@ describe("canWriteSave", () => {
     const holder = "tab-A";
     expect(canWriteSave({ latched: false, leaseHolder: holder, myLeaseId: a.owner })).toBe(true);
     expect(canWriteSave({ latched: false, leaseHolder: holder, myLeaseId: b.owner })).toBe(false);
+  });
+});
+
+/**
+ * 부팅이 야간 정산을 쓰는 자리 — <b>리스보다 먼저 돈다.</b>
+ *
+ * 탭 A가 게임을 소유한 채 두고 탭 B를 열면, B의 부팅이 리스를 주장하기도 전에 A의
+ * 저장을 읽어 정산하고 <b>자기 이름으로 덮어썼다</b> (적대적 리뷰 R9-20).
+ * 「리스 fail-closed」 검사는 그 뒤의 `writeSave`에만 있어서 이 창을 못 막았다.
+ */
+describe("bootstrapMayWrite", () => {
+  it("주인이 이미 있으면 부팅은 쓰지 않는다", () => {
+    expect(bootstrapMayWrite("tab-A", "tab-B")).toBe(false);
+  });
+
+  it("주인이 나면 쓴다 — 새로고침한 같은 탭이다", () => {
+    expect(bootstrapMayWrite("tab-A", "tab-A")).toBe(true);
+  });
+
+  it("주인이 없으면 쓴다 — 첫 실행이거나 스토리지를 못 읽는다", () => {
+    expect(bootstrapMayWrite(null, "tab-A")).toBe(true);
+  });
+
+  it("두 탭이 동시에 열려도 정산을 두 번 쓰지 않는다", () => {
+    // A가 먼저 리스를 잡았다면 B의 부팅은 조용히 물러난다 —
+    // B의 정산분은 메모리에만 남고, B가 실제로 리스를 얻으면 그때 기록된다
+    const holder = "tab-A";
+    expect(bootstrapMayWrite(holder, "tab-A")).toBe(true);
+    expect(bootstrapMayWrite(holder, "tab-B")).toBe(false);
   });
 });

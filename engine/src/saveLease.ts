@@ -58,3 +58,23 @@ export function canWriteSave(
   if (leaseHolder === null) return true;
   return leaseHolder === myLeaseId;
 }
+
+/**
+ * 부팅이 야간 정산 결과를 <b>써도 되는가</b>.
+ *
+ * 부팅은 React 이펙트가 리스를 주장하기 <b>전에</b> 돈다. 그래서 오프라인 시간이 있으면
+ * `nightCash > 0` 경로가 현재 소유자를 확인하지 않고 새 owner/rev로 저장을 덮어썼다:
+ * 탭 A가 게임을 소유한 채 두고 탭 B를 열면, B가 리스를 주장하기도 전에 A의 저장을
+ * 읽어 정산하고 <b>자기 이름으로 덮어썼다</b> (적대적 리뷰 R9-20).
+ * 「리스 fail-closed」 검사는 그 뒤의 `writeSave`에만 있었다.
+ *
+ * 규칙은 단순하다: <b>주인이 이미 있으면 부팅은 쓰지 않는다.</b> 정산 결과는 메모리에만
+ * 두고, 리스를 실제로 얻은 뒤 평상시 저장 경로가 기록한다. 주인이 없으면(첫 실행·
+ * 스토리지 없음) 써도 된다 — 그때는 경쟁자가 없다.
+ *
+ * @param leaseHolder 리스 키에 적힌 값. 못 읽으면 null(혼자 도는 것으로 본다).
+ * @param myLeaseId 이 탭이 쓰려는 신원.
+ */
+export function bootstrapMayWrite(leaseHolder: string | null, myLeaseId: string): boolean {
+  return leaseHolder === null || leaseHolder === myLeaseId;
+}

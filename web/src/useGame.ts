@@ -1,5 +1,6 @@
 import {
   Balance,
+  bootstrapMayWrite,
   canWriteSave,
   DotNetRandom,
   Session,
@@ -184,6 +185,12 @@ export function useGame() {
     savePort: { current: (() => void) | null };
     /** 이 탭의 신원 — 부팅과 훅이 **같은 값**을 써야 한다 */
     leaseId: string;
+    /**
+     * 부팅이 야간 정산을 <b>못 썼다</b> — 이미 주인이 있는 저장이었다.
+     * 리스를 실제로 얻으면 그때 기록해야 한다. 안 그러면 정산분이 메모리에만 남아
+     * 다음 새로고침에 사라진다.
+     */
+    pendingSave: boolean;
   }>();
 
   if (!boot.current) boot.current = bootstrap();
@@ -321,6 +328,17 @@ export function useGame() {
     };
     claim();
 
+    // **부팅이 밀어 둔 저장을 여기서 기록한다** — 이제 리스가 우리 것이다.
+    // 부팅은 리스를 주장하기 전에 돌기 때문에 그때는 쓸 수 없었다 (R9-20).
+    //
+    // 포트가 아직 안 꽂혔을 수 있다(저장 이펙트가 이 이펙트보다 뒤에 돈다). 그때는
+    // 플래그를 남겨 두고 포트가 꽂히는 쪽에서 처리한다 — 여기서 못 썼다고 잃으면
+    // 정산분이 메모리에만 남아 다음 새로고침에 사라진다.
+    if (boot.current!.pendingSave && boot.current!.savePort.current) {
+      boot.current!.pendingSave = false;
+      boot.current!.savePort.current();
+    }
+
     // 다른 탭이 소유권을 가져가면 storage 이벤트가 온다 (같은 탭에서는 발생하지 않는다)
     const onStorage = (e: StorageEvent) => {
       if (e.key === LEASE_KEY && e.newValue && e.newValue !== leaseId) {
@@ -446,6 +464,11 @@ export function useGame() {
   // 저장 함수가 준비되면 엔진 콜백에 꽂는다 — 자동 완료도 즉시 저장된다
   useEffect(() => {
     boot.current!.savePort.current = save;
+    // 리스 이펙트가 먼저 돌아 밀린 저장을 못 썼으면 여기서 마저 쓴다
+    if (boot.current!.pendingSave) {
+      boot.current!.pendingSave = false;
+      save();
+    }
     return () => {
       boot.current!.savePort.current = null;
     };
@@ -668,7 +691,19 @@ function bootstrap() {
 
   // **정산 결과를 즉시 쓴다.** 원작 `GameMain.SettleNight`도 곧바로 Save()를 부른다.
   // 다음 주기 저장까지 미루면 그 사이에 강제 종료됐을 때 **같은 savedAtMs로 또 정산**된다.
-  if (nightCash > 0) {
+  //
+  // 다만 **주인이 이미 있으면 쓰지 않는다.** 부팅은 리스를 주장하기 전에 돌기 때문에,
+  // 검사 없이 쓰면 다른 탭이 소유한 저장을 자기 이름으로 덮어쓴다 (적대적 리뷰 R9-20).
+  // 그때는 정산 결과가 메모리에만 남고, 리스를 실제로 얻으면 평상시 저장이 기록한다.
+  let leaseHolder: string | null = null;
+  try {
+    leaseHolder = localStorage.getItem(LEASE_KEY);
+  } catch {
+    /* 스토리지를 못 읽으면 소유권 개념도 없다 — 혼자 도는 것으로 본다 */
+  }
+  const mayWrite = bootstrapMayWrite(leaseHolder, leaseId);
+
+  if (nightCash > 0 && mayWrite) {
     try {
       const file2: SaveFile = {
         version: SAVE_VERSION,
@@ -685,5 +720,6 @@ function bootstrap() {
     }
   }
 
-  return { balance, workshop, line, session, rng, recovered, nightCash, rev, savePort, leaseId };
+  // 부팅이 못 썼으면 **저장이 아직 밀려 있다** — 리스를 얻는 즉시 기록해야 한다
+  return { balance, workshop, line, session, rng, recovered, nightCash, rev, savePort, leaseId, pendingSave: !mayWrite };
 }
