@@ -535,3 +535,95 @@ describe("리스 하트비트", () => {
     expect(bootstrapMayWrite(gone, "B")).toBe(true);
   });
 });
+
+/**
+ * <b>락 없는 브라우저에서 두 탭을 실제로 «엇갈리게» 돌려 본다.</b>
+ *
+ * README는 오래 「`navigator.locks` 미지원 환경에서 진행이 덮일 수 있다」고 적어 두었다(R12-12).
+ * 그 문장은 리스에 하트비트·TTL이 붙기 «전»의 것이다 — 지금도 참인지 <b>말로 따지지 않고
+ * 돌려서 본다</b>. 저장 경로는 순수 함수 넷으로 이루어져 있으므로 브라우저 없이 그 순서를
+ * 그대로 흉내 낼 수 있다:
+ *
+ *   ① 리스를 읽는다(liveLeaseHolder) ② 써도 되는가(canWriteSave)
+ *   ③ 저장을 읽는다 ④ 양보해야 하나(shouldYieldSave) → 쓴다(nextRevision)
+ *
+ * `navigator.locks`가 없으면 ①~⑤가 «한 덩어리»가 아니다. 그래서 최악의 끼어들기 —
+ * <b>A가 리스를 읽은 «직후» B가 전부 해치우는</b> 순서 — 를 만들어 A가 B의 진행을
+ * 덮는지 본다.
+ */
+describe("락 없는 두 탭 — 최악의 끼어들기", () => {
+  const NOW = 1_000_000;
+
+  /** localStorage 한 칸씩만 흉내 낸다 — 실제 저장 경로가 읽고 쓰는 것이 이 둘뿐이다. */
+  interface World {
+    lease: { id: string; at: number } | null;
+    save: { rev: number; owner?: string } | null;
+  }
+
+  /**
+   * 탭이 부팅할 때 드는 리비전 — <b>저장된 것보다 «하나 크다»</b> (`useGame`: `(file?.rev ?? 0) + 1`).
+   *
+   * 처음에 이걸 놓쳐서 「인수한 탭이 아무것도 못 쓴다」는 틀린 결론이 나왔다. 인수한 B가
+   * 저장과 «같은» rev를 들고 있으면 <c>shouldYieldSave</c>가 「동률 = 충돌」로 막는 것이 맞다 —
+   * 진짜 코드에서는 그런 상태가 나오지 않는다.
+   */
+  const bootRev = (world: World) => (world.save?.rev ?? 0) + 1;
+
+  /** 한 탭의 저장 시도 — useGame.writeSave와 «같은 순서»다. */
+  function attemptWrite(world: World, tab: { id: string; rev: number }, now: number): boolean {
+    const holder = liveLeaseHolder(world.lease, now);                      // ①
+    if (!canWriteSave({ latched: false, leaseHolder: holder, myLeaseId: tab.id })) return false; // ②
+    const existing = world.save;                                            // ③
+    if (shouldYieldSave(existing, { rev: tab.rev, owner: tab.id })) return false;                // ④
+    world.save = { rev: nextRevision(existing, { rev: tab.rev }), owner: tab.id };               // ⑤
+    return true;
+  }
+
+  it("A가 리스를 읽은 직후 B가 인수하고 저장해도, A가 B를 덮지 못한다", () => {
+    // A가 주인이지만 하트비트가 끊긴 지 오래다(백그라운드 탭이 스로틀됐다)
+    const world: World = { lease: { id: "A", at: NOW - LEASE_TTL_MS - 1 }, save: { rev: 5, owner: "A" } };
+
+    // ── A가 ①을 막 지났다: 그 시점의 리스는 «만료»다 → A는 여기서 이미 못 쓴다
+    const aHolderAtRead = liveLeaseHolder(world.lease, NOW);
+    expect(aHolderAtRead).toBeNull();
+
+    // ── B가 끼어들어 전부 해치운다: 인수 → 플레이 → 저장
+    const bRev = bootRev(world); // B는 저장을 읽고 들어왔다 — rev 6
+    expect(mayClaimLease(world.lease, "B", NOW)).toBe(true);
+    world.lease = { id: "B", at: NOW };
+    expect(attemptWrite(world, { id: "B", rev: bRev }, NOW)).toBe(true);
+    expect(world.save).toEqual({ rev: 6, owner: "B" });
+
+    // ── 이제 A가 ②~⑤를 마저 돌린다. **B의 저장을 덮으면 안 된다.**
+    // A는 옛 세션이라 여전히 rev 6을 들고 있다(자기가 마지막에 쓴 5의 다음).
+    expect(attemptWrite(world, { id: "A", rev: 6 }, NOW)).toBe(false);
+    expect(world.save).toEqual({ rev: 6, owner: "B" });
+  });
+
+  it("«정말» 동시라도 리스를 쥔 쪽만 쓴다 — 리스가 유일한 직렬화 수단이다", () => {
+    // 두 탭이 같은 저장 5에서 출발한다. owner 비교만으로는 둘 다 통과하던 자리(R6·R8-11).
+    const world: World = { lease: { id: "B", at: NOW }, save: { rev: 5 } }; // owner 없는 구버전 저장
+
+    expect(attemptWrite(world, { id: "A", rev: 6 }, NOW)).toBe(false); // 리스가 B다
+    expect(attemptWrite(world, { id: "B", rev: 6 }, NOW)).toBe(true);
+    expect(world.save).toEqual({ rev: 6, owner: "B" });
+  });
+
+  it("살아 있는 주인이 있으면 인수 자체가 안 된다 — 여기가 진행이 사라지던 자리다", () => {
+    const world: World = { lease: { id: "A", at: NOW - 100 }, save: { rev: 5, owner: "A" } };
+
+    expect(mayClaimLease(world.lease, "B", NOW)).toBe(false);
+    expect(attemptWrite(world, { id: "B", rev: 1 }, NOW)).toBe(false);   // 낡은 메모리로 덮기 시도
+    expect(world.save).toEqual({ rev: 5, owner: "A" });
+  });
+
+  it("주인이 탭을 닫아도 TTL이 지나면 풀린다 — 게임이 영원히 잠기지 않는다", () => {
+    const world: World = { lease: { id: "A", at: NOW }, save: { rev: 5, owner: "A" } };
+
+    const later = NOW + LEASE_TTL_MS + 1;
+    expect(mayClaimLease(world.lease, "B", later)).toBe(true);
+    world.lease = { id: "B", at: later };
+    expect(attemptWrite(world, { id: "B", rev: bootRev(world) }, later)).toBe(true);
+    expect(world.save).toEqual({ rev: 6, owner: "B" });
+  });
+});
